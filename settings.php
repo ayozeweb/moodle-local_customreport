@@ -28,16 +28,32 @@ if ($hassiteconfig) {
     $settings = new admin_settingpage('local_customreport', get_string('pluginname', 'local_customreport'));
     $ADMIN->add('localplugins', $settings);
 
-    $settings->add(new admin_setting_configduration('local_customreport/sessiongap',
+    $settings->add(new admin_setting_configduration(
+        'local_customreport/sessiongap',
         get_string('sessiongap', 'local_customreport'),
-        get_string('sessiongap_desc', 'local_customreport'), 30 * MINSECS, MINSECS));
-    $settings->add(new admin_setting_configduration('local_customreport/sessiontail',
+        get_string('sessiongap_desc', 'local_customreport'),
+        30 * MINSECS,
+        MINSECS
+    ));
+    $settings->add(new admin_setting_configduration(
+        'local_customreport/sessiontail',
         get_string('sessiontail', 'local_customreport'),
-        get_string('sessiontail_desc', 'local_customreport'), 5 * MINSECS, MINSECS));
-    $settings->add(new admin_setting_configtext('local_customreport/inactivitydays',
+        get_string('sessiontail_desc', 'local_customreport'),
+        5 * MINSECS,
+        MINSECS
+    ));
+    $settings->add(new admin_setting_configtext(
+        'local_customreport/inactivitydays',
         get_string('inactivitydays', 'local_customreport'),
-        get_string('inactivitydays_desc', 'local_customreport'), 7, PARAM_INT));
-    $settings->add(new admin_setting_configtext('local_customreport/logretentiondays',
+        get_string('inactivitydays_desc', 'local_customreport'),
+        7,
+        PARAM_INT
+    ));
+    $settings->add(new admin_setting_configtext(
+        'local_customreport/logretentiondays',
         get_string('logretentiondays', 'local_customreport'),
-        get_string('logretentiondays_desc', 'local_customreport'), 365, PARAM_INT));
+        get_string('logretentiondays_desc', 'local_customreport'),
+        365,
+        PARAM_INT
+    ));
 }
