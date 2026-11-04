@@ -41,4 +41,4 @@ Hito 3 (Motor de datos) — CERRADO. Siguiente: hito 4 (Informes de visita virtu
 - El PDF del modelo de datos tiene los esquemas de petición/respuesta como imágenes: se confirmarán contra el WSDL en el hito 5.
 
 ## Siguiente paso
-Hito 3: sesiones y tiempos (umbral/cola), accesos por área, participación, progreso, altas y bajas con causas; tareas programadas y tablas agregadas; API `\local_customreport\api\progress`.
+Hito 4: calculadora 30/70, datasources de Report builder, páginas de estadísticas/gráficos, impresión/CSV/XML, informe del alumno, panel del tutor, rol y comprobación del inspector.
