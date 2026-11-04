@@ -29,5 +29,6 @@
  */
 function xmldb_local_customreport_install() {
     \local_customreport\local\profile_manager::install_builtin();
+    \local_customreport\local\cause_manager::install_defaults();
     return true;
 }

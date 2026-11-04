@@ -16,9 +16,9 @@ Requisitos / Requirements: Moodle 5.3, PHP 8.3/8.4 (64 bit, `sodium`), `max_inpu
 
 ## Cálculo del tiempo / Time calculation
 
-El tiempo dedicado es una **estimación** calculada a partir de `logstore_standard_log`: una sesión se corta cuando el hueco entre eventos supera un umbral configurable (30 min por defecto); al último evento de cada sesión se le suma una cola configurable (5 min por defecto) y el tiempo se atribuye al área o actividad del evento. (Implementación en hitos posteriores.)
+El tiempo dedicado es una **estimación** calculada a partir de `logstore_standard_log`: una sesión se corta cuando el hueco entre eventos supera un umbral configurable (30 min por defecto); al último evento de cada sesión se le suma una cola configurable (5 min por defecto) y el tiempo se atribuye al área o actividad del evento. Los segundos se asignan al día local (zona horaria del servidor, también en cambios de horario). Un hueco igual al umbral sigue siendo la misma sesión; un evento aislado cuenta solo la cola. Los datos se agregan de forma incremental con la tarea programada «Agregar el uso a partir del registro» (cada 15 min) y nunca se recorre el registro completo al cargar una página. Solo se guarda el uso de la plataforma y de los cursos con una acción formativa configurada.
 
-Time spent is an **estimate** computed from `logstore_standard_log`: a session ends when the gap between events exceeds a configurable threshold (default 30 min); a configurable tail is added to the last event of each session and time is attributed to the event's area or activity. (Implemented in later milestones.)
+Time spent is an **estimate** computed from `logstore_standard_log`: a session ends when the gap between events exceeds a configurable threshold (default 30 min); a configurable tail is added to the last event of each session and time is attributed to the event's area or activity. Seconds are assigned to the local day (server timezone, also on daylight saving changes). A gap equal to the threshold stays in the same session; a lone event counts only the tail. Data is aggregated incrementally by the scheduled task "Aggregate usage from the log" (every 15 min) and the full log is never scanned while a page loads. Only platform usage and courses with a configured training action are stored.
 
 ## Guía rápida del inspector / Inspector quick guide
 

@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_customreport';
-$plugin->version = 2026110402;
+$plugin->version = 2026110403;
 $plugin->requires = 2026100500;
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->release = '0.1.0';

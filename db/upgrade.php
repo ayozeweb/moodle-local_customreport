@@ -49,5 +49,18 @@ function xmldb_local_customreport_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026110402, 'local', 'customreport');
     }
 
+    if ($oldversion < 2026110403) {
+        foreach (
+            ['local_customreport_usage', 'local_customreport_cursor', 'local_customreport_progress',
+                'local_customreport_enrol', 'local_customreport_cause', 'local_customreport_deferred'] as $table
+        ) {
+            if (!$dbman->table_exists($table)) {
+                $dbman->install_one_table_from_xmldb_file($CFG->dirroot . '/local/customreport/db/install.xml', $table);
+            }
+        }
+        \local_customreport\local\cause_manager::install_defaults();
+        upgrade_plugin_savepoint(true, 2026110403, 'local', 'customreport');
+    }
+
     return true;
 }

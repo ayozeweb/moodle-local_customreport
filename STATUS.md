@@ -1,7 +1,7 @@
 # STATUS
 
 ## Hito actual
-Hito 2 (Configuración) — CERRADO. Siguiente: hito 3 (Motor de datos).
+Hito 3 (Motor de datos) — CERRADO. Siguiente: hito 4 (Informes de visita virtual).
 
 ## Hecho
 - Hito 1: base del plugin (version, capabilities, ajustes, cadenas en/es, privacy, CI, README, REQUISITOS).
@@ -13,7 +13,11 @@ Hito 2 (Configuración) — CERRADO. Siguiente: hito 3 (Motor de datos).
   - `cmrole_manager`: rol evaluativo (proceso / prueba final 1.ª / 2.ª / FCT / no evaluable); aviso y mapeo de sugerencia AF/AE/PP/PO si hay format_customtiles (sin dependencia).
   - `profile_field_wizard`: campos de perfil de alumnado y tutores (competencia docente 01–06 del MD).
   - Páginas: `manage.php`, `structure.php`, `roles.php`, admin `presets.php` y `profilefields.php`, enlace en navegación de curso.
-- Validación: 17 tests PHPUnit en verde (PostgreSQL 16 local), phpcs (estándar moodle) sin avisos, instalación y actualización limpias.
+- Hito 3:
+  - Tablas: `_usage`, `_cursor`, `_progress`, `_enrol`, `_cause`, `_deferred`.
+  - `session_calculator` (algoritmo puro: hueco ≤ umbral = misma sesión, cola al cerrar, duplicados, desorden, días locales con cambio de hora), `usage_aggregator` (marca de agua del log + cursor por usuario, accesos, participación, eventos de matrícula), `progress_calculator` + `api\progress` (con comprobación de capacidades), `cause_manager` (catálogo configurable), `retention` y privacy provider completo con borrado aplazado (`purge_deferred`).
+  - Tareas programadas: `aggregate_usage` (*/15), `update_progress` (horaria), `purge_deferred` (diaria).
+- Validación hito 2: 17 tests PHPUnit en verde (PostgreSQL 16 local), phpcs (estándar moodle) sin avisos, instalación y actualización limpias.
 
 ## Decisiones
 - Privacy provider sigue siendo `null_provider`: las tablas del hito 2 guardan configuración, no datos personales de alumnos. Se sustituirá en el hito 3 (datos agregados por usuario).
@@ -21,6 +25,9 @@ Hito 2 (Configuración) — CERRADO. Siguiente: hito 3 (Motor de datos).
 - Capacidad de gestión (`local/customreport:manage`) comprobada en contexto de sistema (config. administrativa).
 - Pesos del perfil «Empresa» 0,50/0,50 y 1 convocatoria: provisionales (TODO-NORMATIVA R-TN-2).
 - Las opciones de campos de perfil sin catálogo oficial en el repo son configurables (R-TN-1).
+- Solo se almacena el uso de la plataforma (courseid 0) y de cursos con acción configurada (minimización RGPD). Limitación: no hay relleno retroactivo; el uso previo a configurar una acción no se recupera (TODO: comando CLI de backfill por curso).
+- Un evento de «vista» (crud r, action viewed) o el inicio de sesión cuenta como acceso; el tiempo entre eventos se atribuye al área del evento anterior; los eventos de matrícula no cuentan como actividad del administrador.
+- Borrado RGPD: dentro del periodo de control (hasta fin + 90 días, o sin fecha de fin) la solicitud se registra en `local_customreport_deferred` y se ejecuta al terminar; el cursor técnico sí se borra siempre.
 - Tests con atributos `#[CoversClass]` (PHPUnit 11) para evitar avisos de deprecación con `--fail-on-warning`.
 
 ## Bloqueos / limitaciones del entorno

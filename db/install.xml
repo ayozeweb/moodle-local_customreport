@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/customreport/db" VERSION="2026110401" COMMENT="XMLDB file for Moodle local/customreport"
+<XMLDB PATH="local/customreport/db" VERSION="2026110403" COMMENT="XMLDB file for Moodle local/customreport"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -92,6 +92,105 @@
       <INDEXES>
         <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid"/>
       </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_customreport_usage" COMMENT="Aggregated usage per user, area and day (estimated time)">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 when the area is not an activity"/>
+        <FIELD NAME="component" TYPE="char" LENGTH="100" NOTNULL="true" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="day" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Local midnight timestamp"/>
+        <FIELD NAME="events" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="accesses" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="participations" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="seconds" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="firstaccess" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="lastaccess" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="area" TYPE="unique" FIELDS="userid, courseid, cmid, component, day"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="coursedayuser" UNIQUE="false" FIELDS="courseid, day, userid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_customreport_cursor" COMMENT="Open session state per user for incremental aggregation">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="lasttime" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="lastcourseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="lastcmid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="lastcomponent" TYPE="char" LENGTH="100" NOTNULL="true" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="isopen" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid" TYPE="unique" FIELDS="userid"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_customreport_progress" COMMENT="Progress per user and module/unit (nodeid 0 = whole action)">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="nodeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="activitiestotal" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="activitiesdone" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="processavg" TYPE="number" LENGTH="10" DECIMALS="5" NOTNULL="false" SEQUENCE="false" COMMENT="Average of process activities, scale 0-10"/>
+        <FIELD NAME="final1" TYPE="number" LENGTH="10" DECIMALS="5" NOTNULL="false" SEQUENCE="false" COMMENT="Final test 1st call, scale 0-10"/>
+        <FIELD NAME="final2" TYPE="number" LENGTH="10" DECIMALS="5" NOTNULL="false" SEQUENCE="false" COMMENT="Final test 2nd call, scale 0-10"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="usernode" TYPE="unique" FIELDS="courseid, userid, nodeid"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_customreport_enrol" COMMENT="Enrolment events (registrations, changes, withdrawals) taken from the log">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="eventtype" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="create, update or delete"/>
+        <FIELD NAME="eventtime" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="logid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="causeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="logid" TYPE="unique" FIELDS="logid"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="courseuser" UNIQUE="false" FIELDS="courseid, userid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_customreport_cause" COMMENT="Configurable catalogue of withdrawal causes">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="code" TYPE="char" LENGTH="30" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="enabled" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="code" TYPE="unique" FIELDS="code"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_customreport_deferred" COMMENT="Privacy deletion requests deferred until the legal follow-up period ends">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timerequested" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="usercourse" TYPE="unique" FIELDS="userid, courseid"/>
+      </KEYS>
     </TABLE>
   </TABLES>
 </XMLDB>
