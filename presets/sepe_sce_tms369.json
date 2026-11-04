@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "shortname": "sepe_sce_tms369",
+  "name": "SEPE/SCE — Orden TMS/369/2019",
+  "version": 1,
+  "passmark": 5,
+  "weights": {"process": 0.30, "final": 0.70},
+  "minfinal": 5,
+  "attempts": 2,
+  "reports": ["access", "participation", "time", "activities", "results", "finalscore", "completion", "learnerprofile", "tutorprofile", "enrolment", "actionid"],
+  "columns": ["fullname", "firstaccess", "lastaccess", "accesses", "timespent", "activitiesdone", "processaverage", "finalgrade", "finalscore"],
+  "requiredfields": ["actioncode", "centercode", "specialtycode", "startplanned", "endplanned"],
+  "legaltexts": {
+    "consent": {
+      "en": "Your personal data will be processed for the sole purpose of evaluating, monitoring and controlling this training action. The recipient is the competent employment administration. You may exercise your rights of access, rectification, erasure and objection.",
+      "es": "Sus datos personales se tratarán con la exclusiva finalidad de realizar la evaluación, seguimiento y control de esta acción formativa. El destinatario es la administración laboral competente. Podrá ejercer sus derechos de acceso, rectificación, supresión y oposición."
+    }
+  }
+}

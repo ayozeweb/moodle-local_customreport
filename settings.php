@@ -56,4 +56,17 @@ if ($hassiteconfig) {
         365,
         PARAM_INT
     ));
+
+    $ADMIN->add('localplugins', new admin_externalpage(
+        'local_customreport_presets',
+        get_string('presets', 'local_customreport'),
+        new moodle_url('/local/customreport/presets.php'),
+        'local/customreport:manage'
+    ));
+    $ADMIN->add('localplugins', new admin_externalpage(
+        'local_customreport_profilefields',
+        get_string('profilefieldswizard', 'local_customreport'),
+        new moodle_url('/local/customreport/profilefields.php'),
+        'local/customreport:manage'
+    ));
 }
