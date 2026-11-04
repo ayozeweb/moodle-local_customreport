@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- local_customreport follow-up report schema (version 1). GPL v3 or later. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:moodle:local_customreport:followup:1"
+    targetNamespace="urn:moodle:local_customreport:followup:1" elementFormDefault="qualified">
+  <xs:element name="followup">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="action" type="actionType"/>
+        <xs:element name="filters" type="anyChildren"/>
+        <xs:element name="summary" type="anyChildren"/>
+        <xs:element name="nodes">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="node" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:complexContent>
+                    <xs:extension base="anyChildren">
+                      <xs:attribute name="id" type="xs:int" use="required"/>
+                      <xs:attribute name="type" type="xs:string" use="required"/>
+                    </xs:extension>
+                  </xs:complexContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="areas">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="area" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:complexContent>
+                    <xs:extension base="anyChildren">
+                      <xs:attribute name="component" type="xs:string" use="required"/>
+                    </xs:extension>
+                  </xs:complexContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="learners">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="learner" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:complexContent>
+                    <xs:extension base="anyChildren">
+                      <xs:attribute name="id" type="xs:int" use="required"/>
+                      <xs:attribute name="status" use="required">
+                        <xs:simpleType>
+                          <xs:restriction base="xs:string">
+                            <xs:enumeration value="notstarted"/>
+                            <xs:enumeration value="started"/>
+                            <xs:enumeration value="completed"/>
+                            <xs:enumeration value="dropped"/>
+                          </xs:restriction>
+                        </xs:simpleType>
+                      </xs:attribute>
+                    </xs:extension>
+                  </xs:complexContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:string" use="required"/>
+      <xs:attribute name="generated" type="xs:dateTime" use="required"/>
+      <xs:attribute name="profile" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="anyChildren">
+    <xs:sequence>
+      <xs:any namespace="##targetNamespace" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="actionType">
+    <xs:sequence>
+      <xs:element name="origin" type="xs:string"/>
+      <xs:element name="code" type="xs:string"/>
+      <xs:element name="centercode" type="xs:string"/>
+      <xs:element name="areacode" type="xs:string"/>
+      <xs:element name="specialtycode" type="xs:string"/>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="authority" type="xs:string"/>
+      <xs:element name="modality" type="xs:string"/>
+      <xs:element name="situation" type="xs:int"/>
+      <xs:element name="hours" type="xs:int"/>
+      <xs:element name="startdate" type="dateType"/>
+      <xs:element name="enddate" type="dateType"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="dateType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="type" use="required">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="real"/>
+              <xs:enumeration value="planned"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+</xs:schema>

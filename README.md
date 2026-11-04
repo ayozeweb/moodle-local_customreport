@@ -22,7 +22,19 @@ Time spent is an **estimate** computed from `logstore_standard_log`: a session e
 
 ## Guía rápida del inspector / Inspector quick guide
 
-Pendiente (hito 4) / Pending (milestone 4).
+**ES**
+1. Asigne a la persona inspectora el rol *Seguimiento Administración competente* (creado al instalar, solo lectura) en el contexto del sistema.
+2. Abra `/local/customreport/inspector.php`: lista las acciones formativas con acceso directo al informe de cada una.
+3. En el informe puede filtrar por módulo/UF y por fechas (inicio, desarrollo, final), ver totales, medias y porcentajes, imprimirlo, y exportarlo a CSV y XML (esquema en `docs/xml-schema.md`).
+4. El tiempo dedicado es una estimación (ver «Cálculo del tiempo»).
+5. *Administración del sitio → Informes → Comprobaciones de seguridad/estado*: «El rol de la administración competente es de solo lectura» alerta si alguien le añade permisos de escritura.
+
+**EN**
+1. Assign the *Competent administration follow-up* role (created on install, read-only) at system level.
+2. Open `/local/customreport/inspector.php`: it lists the training actions with direct links to each report.
+3. Filter by module/unit and dates, see totals, averages and percentages, print, or export to CSV and XML (schema in `docs/xml-schema.md`).
+4. Time spent is an estimate (see "Time calculation").
+5. *Site administration → Reports → Status checks* flags any write capability added to the read-only role.
 
 ## Licencia / License
 

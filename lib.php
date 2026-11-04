@@ -40,3 +40,39 @@ function local_customreport_extend_navigation_course(navigation_node $navigation
         );
     }
 }
+
+/**
+ * Status checks (Site administration > Reports > Security/Status checks).
+ *
+ * @return \core\check\check[]
+ */
+function local_customreport_status_checks(): array {
+    return [new \local_customreport\check\inspector_readonly()];
+}
+
+/**
+ * Serve the institutional logos uploaded in the plugin settings.
+ *
+ * @param stdClass $course
+ * @param stdClass|null $cm
+ * @param context $context
+ * @param string $filearea
+ * @param array $args
+ * @param bool $forcedownload
+ * @param array $options
+ * @return bool
+ */
+function local_customreport_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
+    if ($context->contextlevel != CONTEXT_SYSTEM || !preg_match('/^logo[1-4]$/', $filearea)) {
+        return false;
+    }
+    require_login();
+    $fs = get_file_storage();
+    $filename = array_pop($args);
+    $filepath = $args ? '/' . implode('/', $args) . '/' : '/';
+    $file = $fs->get_file($context->id, 'local_customreport', $filearea, 0, $filepath, $filename);
+    if (!$file || $file->is_directory()) {
+        return false;
+    }
+    send_stored_file($file, 86400, 0, false, $options);
+}

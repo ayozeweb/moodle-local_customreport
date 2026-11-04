@@ -62,5 +62,10 @@ function xmldb_local_customreport_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026110403, 'local', 'customreport');
     }
 
+    if ($oldversion < 2026110404) {
+        \local_customreport\local\inspector_role::ensure();
+        upgrade_plugin_savepoint(true, 2026110404, 'local', 'customreport');
+    }
+
     return true;
 }

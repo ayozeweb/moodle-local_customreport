@@ -1,0 +1,81 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_customreport/student
+
+    Follow-up report of one learner, per module/unit.
+
+    Context variables required for this template:
+    * logos - Array of logos (url, alt)
+    * fullname - Learner name
+    * actionname - Action name
+    * generated - Generation date
+    * rows - Array of rows (code, name, hours, done, percent, process, final, score, call, result, time)
+
+    Example context (json):
+    {
+        "logos": [{"url": "https://example.com/logo.png", "alt": "Logo"}],
+        "fullname": "Ana", "actionname": "Action", "generated": "04/11/2026",
+        "rows": [{"code": "MF1", "name": "Module", "hours": 60, "done": "2/4", "percent": "50", "process": "7",
+            "final": "5", "score": "6.2", "call": "1", "result": "Passed", "time": "1:30"}]
+    }
+}}
+<div class="local-customreport-student">
+    {{#logos}}<img src="{{url}}" alt="{{alt}}" style="max-height: 60px; margin-right: 1rem;">{{/logos}}
+    <h2>{{actionname}}</h2>
+    <p>{{fullname}} - {{#str}} generatedon, local_customreport, {{generated}} {{/str}}</p>
+    <table class="generaltable">
+        <caption class="sr-only">{{#str}} studentreport, local_customreport {{/str}}</caption>
+        <thead>
+            <tr>
+                <th scope="col">{{#str}} code, local_customreport {{/str}}</th>
+                <th scope="col">{{#str}} name {{/str}}</th>
+                <th scope="col">{{#str}} hours, local_customreport {{/str}}</th>
+                <th scope="col">{{#str}} col_activitiesdone, local_customreport {{/str}}</th>
+                <th scope="col">%</th>
+                <th scope="col">{{#str}} col_processaverage, local_customreport {{/str}}</th>
+                <th scope="col">{{#str}} col_finalgrade, local_customreport {{/str}}</th>
+                <th scope="col">{{#str}} col_finalscore, local_customreport {{/str}}</th>
+                <th scope="col">{{#str}} col_callnumber, local_customreport {{/str}}</th>
+                <th scope="col">{{#str}} totaltime, local_customreport {{/str}}</th>
+                <th scope="col">{{#str}} result, local_customreport {{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#rows}}
+            <tr><td>{{code}}</td><th scope="row">{{name}}</th><td>{{hours}}</td><td>{{done}}</td><td>{{percent}}</td><td>{{process}}</td>
+                <td>{{final}}</td><td>{{score}}</td><td>{{call}}</td><td>{{time}}</td><td>{{result}}</td></tr>
+            {{/rows}}
+        </tbody>
+    </table>
+</div>

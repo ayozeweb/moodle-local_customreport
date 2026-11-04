@@ -30,5 +30,8 @@
 function xmldb_local_customreport_install() {
     \local_customreport\local\profile_manager::install_builtin();
     \local_customreport\local\cause_manager::install_defaults();
+    // Capabilities are normally registered after this script, but the inspector role needs them now.
+    update_capabilities('local_customreport');
+    \local_customreport\local\inspector_role::ensure();
     return true;
 }
