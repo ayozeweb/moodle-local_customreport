@@ -44,7 +44,8 @@ use local_customreport\local\retention;
  */
 class provider implements core_userlist_provider, metadata_provider, plugin_provider {
     /** @var string[] Tables with a userid and a courseid holding follow-up data. */
-    const TABLES = ['local_customreport_usage', 'local_customreport_progress', 'local_customreport_enrol'];
+    const TABLES = ['local_customreport_usage', 'local_customreport_progress', 'local_customreport_enrol',
+        'local_customreport_slot'];
 
     /**
      * Describe the stored data.
@@ -78,6 +79,20 @@ class provider implements core_userlist_provider, metadata_provider, plugin_prov
             'userid' => 'privacy:metadata:userid', 'courseid' => 'privacy:metadata:courseid',
             'timerequested' => 'privacy:metadata:deferred:timerequested',
         ], 'privacy:metadata:deferred');
+        $collection->add_database_table('local_customreport_slot', [
+            'userid' => 'privacy:metadata:userid', 'courseid' => 'privacy:metadata:courseid',
+            'accesses' => 'privacy:metadata:usage:accesses', 'seconds' => 'privacy:metadata:usage:seconds',
+        ], 'privacy:metadata:slot');
+        $collection->add_database_table('local_customreport_idoc', [
+            'userid' => 'privacy:metadata:userid', 'doctype' => 'privacy:metadata:idoc:doctype',
+            'docnumber' => 'privacy:metadata:idoc:docnumber', 'docletter' => 'privacy:metadata:idoc:docletter',
+        ], 'privacy:metadata:idoc');
+        $collection->add_database_table('local_customreport_wslog', [
+            'request' => 'privacy:metadata:wslog:request', 'response' => 'privacy:metadata:wslog:response',
+        ], 'privacy:metadata:wslog');
+        $collection->add_external_location_link('competent_administration', [
+            'idoc' => 'privacy:metadata:idoc', 'progress' => 'privacy:metadata:progress',
+        ], 'privacy:metadata:administration');
         $collection->add_subsystem_link('core_message', [], 'privacy:metadata:messages');
         return $collection;
     }
@@ -221,7 +236,23 @@ class provider implements core_userlist_provider, metadata_provider, plugin_prov
                 $DB->delete_records($table, ['userid' => $userid, 'courseid' => $courseid]);
             }
             $DB->delete_records('local_customreport_deferred', ['userid' => $userid, 'courseid' => $courseid]);
+            self::erase_identity((int) $userid);
         }
+    }
+
+    /**
+     * Delete the identity document of a user once no course under follow-up keeps data about them.
+     *
+     * @param int $userid
+     */
+    private static function erase_identity(int $userid): void {
+        global $DB;
+        foreach (self::TABLES as $table) {
+            if ($DB->record_exists($table, ['userid' => $userid])) {
+                return;
+            }
+        }
+        $DB->delete_records('local_customreport_idoc', ['userid' => $userid]);
     }
 
     /**

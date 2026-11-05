@@ -67,5 +67,31 @@ function xmldb_local_customreport_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026110404, 'local', 'customreport');
     }
 
+    if ($oldversion < 2026110405) {
+        $table = new xmldb_table('local_customreport_action');
+        $field = new xmldb_field('centercode', XMLDB_TYPE_CHAR, '16', null, XMLDB_NOTNULL, null, '', 'actioncode');
+        $dbman->change_field_precision($table, $field);
+        foreach (
+            ['local_customreport_wscenter', 'local_customreport_wsaction', 'local_customreport_wscred',
+                'local_customreport_wslog', 'local_customreport_idoc'] as $name
+        ) {
+            if (!$dbman->table_exists($name)) {
+                $dbman->install_one_table_from_xmldb_file($CFG->dirroot . '/local/customreport/db/install.xml', $name);
+            }
+        }
+        upgrade_plugin_savepoint(true, 2026110405, 'local', 'customreport');
+    }
+
+    if ($oldversion < 2026110406) {
+        if (!$dbman->table_exists('local_customreport_slot')) {
+            $dbman->install_one_table_from_xmldb_file(
+                $CFG->dirroot . '/local/customreport/db/install.xml',
+                'local_customreport_slot'
+            );
+        }
+        \local_customreport\local\cause_manager::install_defaults();
+        upgrade_plugin_savepoint(true, 2026110406, 'local', 'customreport');
+    }
+
     return true;
 }

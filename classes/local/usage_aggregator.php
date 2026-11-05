@@ -124,6 +124,7 @@ class usage_aggregator {
         global $DB;
         $byuser = [];
         $counts = [];
+        $slots = [];
         foreach ($rows as $row) {
             if (isset(self::ENROL_EVENTS[$row->eventname])) {
                 $this->record_enrol($row);
@@ -146,6 +147,17 @@ class usage_aggregator {
             $counts[$key]['events']++;
             if ($islogin || ($row->crud === 'r' && $row->action === 'viewed')) {
                 $counts[$key]['accesses']++;
+                if ($area['courseid'] > 0) {
+                    $this->add_slot(
+                        $slots,
+                        (int) $row->userid,
+                        (int) $area['courseid'],
+                        $day,
+                        session_calculator::slot((int) $row->timecreated, $this->tz),
+                        1,
+                        0
+                    );
+                }
             }
             if (in_array($row->eventname, self::PARTICIPATION_EVENTS, true)) {
                 $counts[$key]['participations']++;
@@ -162,12 +174,26 @@ class usage_aggregator {
             $result = session_calculator::process($events, $this->gap, $this->tail, $open, $this->tz);
             foreach ($result['segments'] as $segment) {
                 $this->add_seconds($counts, $userid, $segment);
+                if ($segment['courseid'] > 0 && $this->is_tracked((int) $segment['courseid'])) {
+                    $this->add_slot(
+                        $slots,
+                        $userid,
+                        (int) $segment['courseid'],
+                        (int) $segment['day'],
+                        (int) $segment['slot'],
+                        0,
+                        (int) $segment['seconds']
+                    );
+                }
             }
             $this->save_cursor($cursor, $userid, $result['open']);
         }
 
         foreach ($counts as $count) {
             $this->flush($count);
+        }
+        foreach ($slots as $slot) {
+            $this->flush_slot($slot);
         }
     }
 
@@ -193,6 +219,21 @@ class usage_aggregator {
                 foreach ($counts as $count) {
                     $this->flush($count);
                 }
+                if ($segment['courseid'] > 0 && $this->is_tracked((int) $segment['courseid'])) {
+                    $slots = [];
+                    $this->add_slot(
+                        $slots,
+                        (int) $cursor->userid,
+                        (int) $segment['courseid'],
+                        (int) $segment['day'],
+                        (int) $segment['slot'],
+                        0,
+                        (int) $segment['seconds']
+                    );
+                    foreach ($slots as $slot) {
+                        $this->flush_slot($slot);
+                    }
+                }
             }
             $DB->set_field('local_customreport_cursor', 'isopen', 0, ['id' => $cursor->id]);
         }
@@ -214,6 +255,48 @@ class usage_aggregator {
             'component' => $segment['component'], 'day' => $segment['day'], 'events' => 0, 'accesses' => 0,
             'participations' => 0, 'seconds' => 0, 'first' => PHP_INT_MAX, 'last' => 0];
         $counts[$key]['seconds'] += $segment['seconds'];
+    }
+
+    /**
+     * Accumulate accesses and seconds per time-of-day slot.
+     *
+     * @param array $slots
+     * @param int $userid
+     * @param int $courseid
+     * @param int $day
+     * @param int $slot
+     * @param int $accesses
+     * @param int $seconds
+     */
+    private function add_slot(array &$slots, int $userid, int $courseid, int $day, int $slot, int $accesses, int $seconds): void {
+        if (!$this->is_tracked($courseid)) {
+            return;
+        }
+        $key = "$userid|$courseid|$day|$slot";
+        $slots[$key] = $slots[$key] ?? ['userid' => $userid, 'courseid' => $courseid, 'day' => $day, 'slot' => $slot,
+            'accesses' => 0, 'seconds' => 0];
+        $slots[$key]['accesses'] += $accesses;
+        $slots[$key]['seconds'] += $seconds;
+    }
+
+    /**
+     * Add a slot counter to the database (insert or increment).
+     *
+     * @param array $slot
+     */
+    private function flush_slot(array $slot): void {
+        global $DB;
+        $conditions = ['userid' => $slot['userid'], 'courseid' => $slot['courseid'], 'day' => $slot['day'],
+            'slot' => $slot['slot']];
+        $record = $DB->get_record('local_customreport_slot', $conditions);
+        if ($record) {
+            $record->accesses += $slot['accesses'];
+            $record->seconds += $slot['seconds'];
+            $DB->update_record('local_customreport_slot', $record);
+        } else {
+            $DB->insert_record('local_customreport_slot', (object) ($conditions + ['accesses' => $slot['accesses'],
+                'seconds' => $slot['seconds']]));
+        }
     }
 
     /**

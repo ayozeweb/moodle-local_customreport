@@ -35,13 +35,13 @@ final class action_manager_test extends \advanced_testcase {
      * Valid data passes validation; wrong values produce errors.
      */
     public function test_validate(): void {
-        $data = (object) ['situation' => 20, 'modality' => 'TF', 'financing' => 'PR', 'centercode' => '8000000001'];
+        $data = (object) ['situation' => 20, 'modality' => 'TF', 'financing' => 'PR', 'centercode' => '8000000000000001'];
         $this->assertSame([], action_manager::validate($data));
 
         $data->situation = 25;
         $data->modality = 'XX';
         $data->financing = 'ZZ';
-        $data->centercode = '12';
+        $data->centercode = 'bad code!';
         $data->startplanned = 200;
         $data->endplanned = 100;
         $errors = action_manager::validate($data);

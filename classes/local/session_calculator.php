@@ -71,7 +71,7 @@ class session_calculator {
      * @param int $gap Session gap threshold.
      * @param int $tail Tail seconds.
      * @param \DateTimeZone|null $tz Timezone.
-     * @return array|null Segment array [courseid, cmid, component, day, seconds] or null if still open.
+     * @return array|null Segment array [courseid, cmid, component, day, slot, seconds] or null if still open.
      */
     public static function close(?array $open, int $horizon, int $gap, int $tail, ?\DateTimeZone $tz = null): ?array {
         if ($open === null || $open['time'] + $gap >= $horizon) {
@@ -95,6 +95,21 @@ class session_calculator {
     }
 
     /**
+     * Time-of-day slot of a timestamp: 1 morning (7:00-15:00), 2 afternoon (15:00-23:00), 3 night (23:00-7:00).
+     *
+     * @param int $time
+     * @param \DateTimeZone $tz
+     * @return int
+     */
+    public static function slot(int $time, \DateTimeZone $tz): int {
+        $hour = (int) (new \DateTimeImmutable('@' . $time))->setTimezone($tz)->format('G');
+        if ($hour >= 7 && $hour < 15) {
+            return 1;
+        }
+        return $hour >= 15 && $hour < 23 ? 2 : 3;
+    }
+
+    /**
      * Add seconds to an accumulator keyed by area and day.
      *
      * @param array $acc
@@ -104,10 +119,11 @@ class session_calculator {
      */
     private static function add(array &$acc, array $event, int $seconds, \DateTimeZone $tz): void {
         $day = self::day_start($event['time'], $tz);
-        $key = $event['courseid'] . '|' . $event['cmid'] . '|' . $event['component'] . '|' . $day;
+        $slot = self::slot($event['time'], $tz);
+        $key = $event['courseid'] . '|' . $event['cmid'] . '|' . $event['component'] . '|' . $day . '|' . $slot;
         if (!isset($acc[$key])) {
             $acc[$key] = ['courseid' => $event['courseid'], 'cmid' => $event['cmid'],
-                'component' => $event['component'], 'day' => $day, 'seconds' => 0];
+                'component' => $event['component'], 'day' => $day, 'slot' => $slot, 'seconds' => 0];
         }
         $acc[$key]['seconds'] += $seconds;
     }

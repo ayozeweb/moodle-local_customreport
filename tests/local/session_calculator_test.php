@@ -166,4 +166,24 @@ final class session_calculator_test extends \basic_testcase {
         $this->assertSame($day - DAYSECS, $result['segments'][0]['day']);
         $this->assertSame(120, $result['segments'][0]['seconds']);
     }
+
+    /**
+     * Time-of-day slots of the data model: morning 7-15, afternoon 15-23, night 23-7 (local time).
+     */
+    public function test_slots(): void {
+        $tz = new \DateTimeZone('UTC');
+        $day = gmmktime(0, 0, 0, 6, 1, 2026);
+        $this->assertSame(3, session_calculator::slot($day + 6 * HOURSECS + 59 * MINSECS, $tz));
+        $this->assertSame(1, session_calculator::slot($day + 7 * HOURSECS, $tz));
+        $this->assertSame(1, session_calculator::slot($day + 14 * HOURSECS + 59 * MINSECS, $tz));
+        $this->assertSame(2, session_calculator::slot($day + 15 * HOURSECS, $tz));
+        $this->assertSame(2, session_calculator::slot($day + 22 * HOURSECS + 59 * MINSECS, $tz));
+        $this->assertSame(3, session_calculator::slot($day + 23 * HOURSECS, $tz));
+        $this->assertSame(3, session_calculator::slot($day, $tz));
+        // Local time is used: 06:30 UTC is 08:30 in Madrid in summer (morning).
+        $this->assertSame(1, session_calculator::slot($day + 6 * HOURSECS + 30 * MINSECS, new \DateTimeZone('Europe/Madrid')));
+        $result = session_calculator::process([['time' => $day + 8 * HOURSECS, 'courseid' => 2, 'cmid' => 1, 'component' => 'x'],
+            ['time' => $day + 8 * HOURSECS + 600, 'courseid' => 2, 'cmid' => 1, 'component' => 'x']], 1800, 300, null, $tz);
+        $this->assertSame(1, $result['segments'][0]['slot']);
+    }
 }

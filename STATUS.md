@@ -1,7 +1,7 @@
 # STATUS
 
 ## Hito actual
-Hito 4 (Informes de visita virtual) — CERRADO. Siguiente: hito 5 (servicio web SOAP).
+Hito 5 (Servicio web SOAP) — CERRADO. Siguiente: hito 6 (Panel de cumplimiento).
 
 ## Hecho
 - Hito 1: base del plugin (version, capabilities, ajustes, cadenas en/es, privacy, CI, README, REQUISITOS).
@@ -25,6 +25,13 @@ Hito 4 (Informes de visita virtual) — CERRADO. Siguiente: hito 5 (servicio web
   - Rol `customreportinspector` solo lectura (creado en install/upgrade) y status check `inspector_readonly`.
   - Logotipos institucionales configurables (4 ranuras) mostrados en informes e impresiones.
   - Smoke test real con servidor web (login admin y alumno): 14 páginas responden 200; CSV y XML válidos contra el XSD; el alumno es redirigido a su informe y se le deniega tutor/inspector/gestión.
+- Hito 5:
+  - WSDL real recuperado de la página HTML guardada en `docs/normativa/ProveedorCentroTFWS.wsdl` (ver `docs/ws.md`); esquemas en `ws/schema/`.
+  - `ws/seguimiento.php` + `classes/sepe/` (service, security, wsdl, store, builder, lifecycle, identity, result_calculator): 6 operaciones, WS-Security PasswordText, validación contra XSD, ciclo de vida, log sin contraseñas con retención, DOMDocument (sin ext-soap).
+  - `wsadmin.php`: credenciales, centro, acciones recibidas y vinculación, importación de documentos de identidad, últimas peticiones.
+  - Tablas: `wscenter`, `wsaction`, `wscred`, `wslog`, `idoc`, `slot` (franjas horarias).
+  - Corrección: `settings.php` del hito 4 no incluía los ajustes de logotipos (un reemplazo falló en silencio); reescrito y verificado en navegador.
+  - Smoke test real por HTTP con las fixtures: códigos 0/1/2/-1, fallos de autenticación como SOAP Fault, WSDL por GET, HTTPS obligatorio.
 - Validación hito 2: 17 tests PHPUnit en verde (PostgreSQL 16 local), phpcs (estándar moodle) sin avisos, instalación y actualización limpias.
 
 ## Decisiones
@@ -39,6 +46,9 @@ Hito 4 (Informes de visita virtual) — CERRADO. Siguiente: hito 5 (servicio web
 - El informe XML es un esquema propio (no hay esquema oficial para la visita virtual en `docs/normativa/`); queda documentado en `docs/xml-schema.md`.
 - «Han iniciado» = con accesos, tiempo o actividades hechas en el intervalo; «bajas» = último evento de matrícula es una baja. «Superan el módulo» = puntuación final ≥ nota de aprobado del perfil; el módulo de prácticas (MP) se supera con todas sus actividades completadas.
 - Aviso automático al tutor (Message API): opcional, no implementado.
+- El servicio usa DOMDocument y no SoapServer: control total del orden/espacios de nombres, mismos resultados con o sin ext-soap y testeable sin servidor.
+- `centercode` de la acción pasa a 16 caracteres (el WSDL define `codigo_centro` de longitud 16; el hito 2 validaba 10 por error).
+- Sin protección contra fuerza bruta en el endpoint (TODO: limitar intentos por IP/usuario).
 - Tests con atributos `#[CoversClass]` (PHPUnit 11) para evitar avisos de deprecación con `--fail-on-warning`.
 
 ## Bloqueos / limitaciones del entorno
@@ -53,4 +63,4 @@ Hito 4 (Informes de visita virtual) — CERRADO. Siguiente: hito 5 (servicio web
 - El PDF del modelo de datos tiene los esquemas de petición/respuesta como imágenes: se confirmarán contra el WSDL en el hito 5.
 
 ## Siguiente paso
-Hito 5: servicio web SOAP del Anexo V.A (WSDL oficial en docs/normativa/), WS-Security UsernameToken, operaciones y códigos de retorno, fixtures XML y tests.
+Hito 6: panel de cumplimiento (sessiontimeout, rol inspector, endpoint SOAP, campos de perfil, consentimiento/tool_policy, logotipos) enlazado con docs/REQUISITOS.md; revisión final de README y requisitos ❌.

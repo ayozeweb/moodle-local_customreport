@@ -170,4 +170,25 @@ final class usage_aggregator_test extends \advanced_testcase {
         $this->assertSame(1, $DB->count_records_select('local_customreport_enrol', 'causeid > 0'));
         $this->assertFalse(cause_manager::assign($course->id, $user->id + 99, 1));
     }
+
+    /**
+     * Accesses and seconds are also stored per time-of-day slot (used by the web service).
+     */
+    public function test_slots_are_aggregated(): void {
+        global $DB;
+        $this->resetAfterTest();
+        [$course, $user] = $this->setup_action();
+        $base = ['userid' => $user->id, 'courseid' => $course->id];
+        $morning = gmmktime(9, 0, 0, 6, 1, 2026);
+        $evening = gmmktime(20, 0, 0, 6, 1, 2026);
+        $this->log($base + ['timecreated' => $morning]);
+        $this->log($base + ['timecreated' => $morning + 600]);
+        $this->log($base + ['timecreated' => $evening]);
+        (new usage_aggregator(1800, 300, new \DateTimeZone('UTC')))->run($evening + 5 * HOURSECS);
+        $slots = $DB->get_records('local_customreport_slot', ['userid' => $user->id], 'slot', 'slot, accesses, seconds');
+        $this->assertSame(2, (int) $slots[1]->accesses);
+        $this->assertSame(900, (int) $slots[1]->seconds);
+        $this->assertSame(1, (int) $slots[2]->accesses);
+        $this->assertSame(300, (int) $slots[2]->seconds);
+    }
 }

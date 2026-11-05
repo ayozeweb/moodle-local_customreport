@@ -36,6 +36,12 @@ Time spent is an **estimate** computed from `logstore_standard_log`: a session e
 4. Time spent is an estimate (see "Time calculation").
 5. *Site administration → Reports → Status checks* flags any write capability added to the read-only role.
 
+## Servicio web SOAP / SOAP web service
+
+ES: endpoint `/local/customreport/ws/seguimiento.php` (HTTPS, SOAP 1.1, WS-Security `PasswordText`). Detalles y desviaciones en [docs/ws.md](docs/ws.md). Basado en la definición ProveedorCentroTFWS del SEPE; el plugin comparable GPL `studiolxd/moodle-local_sepe` se consultó solo para recuperar el WSDL publicado (no se reutiliza su código).
+
+EN: endpoint `/local/customreport/ws/seguimiento.php` (HTTPS, SOAP 1.1, WS-Security `PasswordText`). See [docs/ws.md](docs/ws.md). Based on the SEPE ProveedorCentroTFWS definition; the comparable GPL plugin `studiolxd/moodle-local_sepe` was consulted only to recover the published WSDL (its code is not reused).
+
 ## Licencia / License
 
 GPL v3 or later.

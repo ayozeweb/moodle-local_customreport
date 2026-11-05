@@ -54,8 +54,8 @@ class action_manager {
         if (!in_array($data->financing ?? '', self::FINANCING, true)) {
             $errors['financing'] = 'err_financing';
         }
-        // The centre code is province 80 (teleformation) plus an 8-digit sequence (MD A1.2).
-        if (($data->centercode ?? '') !== '' && !preg_match('/^\d{10}$/', $data->centercode)) {
+        // The WSDL (codigo_centro) allows up to 16 characters for the centre code.
+        if (($data->centercode ?? '') !== '' && !preg_match('/^[0-9A-Za-z]{1,16}$/', $data->centercode)) {
             $errors['centercode'] = 'err_centercode';
         }
         if (!empty($data->startplanned) && !empty($data->endplanned) && $data->endplanned < $data->startplanned) {

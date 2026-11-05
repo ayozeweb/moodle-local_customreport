@@ -44,5 +44,7 @@ class purge_deferred extends \core\task\scheduled_task {
      */
     public function execute(): void {
         provider::purge_deferred();
+        $deleted = \local_customreport\sepe\store::purge_log();
+        mtrace("local_customreport: $deleted web service log rows deleted.");
     }
 }

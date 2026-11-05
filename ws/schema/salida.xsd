@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:entsal="http://entsal.bean.domain.common.proveedorcentro.meyss.spee.es" xmlns="http://salida.bean.domain.common.proveedorcentro.meyss.spee.es" targetNamespace="http://salida.bean.domain.common.proveedorcentro.meyss.spee.es">
+			<xsd:import namespace="http://entsal.bean.domain.common.proveedorcentro.meyss.spee.es" schemaLocation="entsal.xsd"/>
+			<xsd:simpleType name="mensaje_error">
+				<xsd:restriction base="xsd:string">
+					<xsd:length value="250" />
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:element name="RESPUESTA_DATOS_CENTRO">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="1" name="CODIGO_RETORNO" nillable="false" type="entsal:codigo_retorno" />
+						<xsd:element maxOccurs="1" minOccurs="1" name="ETIQUETA_ERROR" nillable="true" type="mensaje_error" />
+						<xsd:element maxOccurs="1" ref="entsal:DATOS_IDENTIFICATIVOS" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="RESPUESTA_OBT_ACCION">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="1" name="CODIGO_RETORNO" nillable="false" type="entsal:codigo_retorno" />
+						<xsd:element maxOccurs="1" minOccurs="1" name="ETIQUETA_ERROR" nillable="true" type="mensaje_error" />
+						<xsd:element maxOccurs="1" ref="entsal:ACCION_FORMATIVA" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="RESPUESTA_OBT_LISTA_ACCIONES">
+				<xsd:complexType>
+					<xsd:sequence>			
+						<xsd:element maxOccurs="1" minOccurs="1" name="CODIGO_RETORNO" nillable="false" type="entsal:codigo_retorno" />
+						<xsd:element maxOccurs="1" minOccurs="1" name="ETIQUETA_ERROR" nillable="true" type="mensaje_error" />
+						<xsd:element maxOccurs="unbounded" minOccurs="0" ref="entsal:ID_ACCION" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>			
+			<xsd:element name="RESPUESTA_ELIMINAR_ACCION">
+				<xsd:complexType>
+					<xsd:sequence>			
+						<xsd:element maxOccurs="1" minOccurs="1" name="CODIGO_RETORNO" nillable="false" type="entsal:codigo_retorno" />
+						<xsd:element maxOccurs="1" minOccurs="1" name="ETIQUETA_ERROR" nillable="true" type="mensaje_error" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:schema>

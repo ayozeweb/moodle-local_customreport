@@ -29,7 +29,7 @@ namespace local_customreport\local;
  */
 class cause_manager {
     /** @var string[] Default cause codes. */
-    const DEFAULTS = ['work', 'personal', 'health', 'content', 'technical', 'other'];
+    const DEFAULTS = ['placement', 'work', 'personal', 'health', 'content', 'technical', 'other'];
 
     /**
      * Insert the default causes that do not exist.

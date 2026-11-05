@@ -57,16 +57,57 @@ if ($hassiteconfig) {
         PARAM_INT
     ));
 
-    $ADMIN->add('localplugins', new admin_externalpage(
-        'local_customreport_presets',
-        get_string('presets', 'local_customreport'),
-        new moodle_url('/local/customreport/presets.php'),
-        'local/customreport:manage'
+    // Follow-up web service.
+    $settings->add(new admin_setting_configcheckbox(
+        'local_customreport/ws_enabled',
+        get_string('ws_enabled', 'local_customreport'),
+        get_string('ws_enabled_desc', 'local_customreport'),
+        1
     ));
-    $ADMIN->add('localplugins', new admin_externalpage(
-        'local_customreport_profilefields',
-        get_string('profilefieldswizard', 'local_customreport'),
-        new moodle_url('/local/customreport/profilefields.php'),
-        'local/customreport:manage'
+    $settings->add(new admin_setting_configcheckbox(
+        'local_customreport/ws_allowhttp',
+        get_string('ws_allowhttp', 'local_customreport'),
+        get_string('ws_allowhttp_desc', 'local_customreport'),
+        0
     ));
+    $settings->add(new admin_setting_configtext(
+        'local_customreport/ws_keycompetence',
+        get_string('ws_keycompetence', 'local_customreport'),
+        get_string('ws_keycompetence_desc', 'local_customreport'),
+        '01',
+        '/^0[1-3]$/'
+    ));
+
+    // Institutional images for report headers and prints (the plugin ships no official logos).
+    for ($i = 1; $i <= \local_customreport\local\branding::SLOTS; $i++) {
+        $settings->add(new admin_setting_configstoredfile(
+            'local_customreport/logo' . $i,
+            get_string('logo', 'local_customreport', $i),
+            get_string('logo_desc', 'local_customreport'),
+            'logo' . $i,
+            0,
+            ['accepted_types' => ['.png', '.jpg', '.jpeg', '.svg', '.gif'], 'maxfiles' => 1]
+        ));
+        $settings->add(new admin_setting_configtext(
+            'local_customreport/logoalt' . $i,
+            get_string('logoalt', 'local_customreport', $i),
+            '',
+            '',
+            PARAM_TEXT
+        ));
+    }
+
+    $pages = [
+        'local_customreport_presets' => ['presets', 'presets.php'],
+        'local_customreport_profilefields' => ['profilefieldswizard', 'profilefields.php'],
+        'local_customreport_wsadmin' => ['wsadmin', 'wsadmin.php'],
+    ];
+    foreach ($pages as $name => [$string, $file]) {
+        $ADMIN->add('localplugins', new admin_externalpage(
+            $name,
+            get_string($string, 'local_customreport'),
+            new moodle_url('/local/customreport/' . $file),
+            'local/customreport:manage'
+        ));
+    }
 }
