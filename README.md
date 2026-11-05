@@ -14,6 +14,12 @@
 
 Requisitos / Requirements: Moodle 5.3, PHP 8.3/8.4 (64 bit, `sodium`), `max_input_vars` ≥ 5000, PostgreSQL 17+ / MariaDB 11.4+ / MySQL 8.4+.
 
+## Configuración del perfil SEPE/SCE / SEPE/SCE profile setup
+
+ES: 1) *Administración → Plugins locales → Asistente de campos de perfil*: crear campos de alumnado y tutores. 2) En cada curso, *Configuración de la acción formativa*: perfil `SEPE/SCE — Orden TMS/369/2019`, códigos, fechas, módulos/UF y rol evaluativo de las actividades. 3) *Servicio web de seguimiento*: crear credenciales para la administración y comunicar la URL del endpoint. 4) *Panel de cumplimiento* revisa todo lo verificable. Pesos (0,30/0,70), nota mínima y convocatorias se editan importando/exportando el perfil JSON.
+
+EN: 1) *Administration → Local plugins → Profile fields wizard*. 2) In each course, *Training action configuration*: profile `SEPE/SCE — Order TMS/369/2019`, codes, dates, modules/units and activity evaluative roles. 3) *Follow-up web service*: create credentials and give the endpoint URL to the administration. 4) The *Compliance panel* checks everything verifiable. Weights (0.30/0.70), minimum score and calls are edited by importing/exporting the JSON profile.
+
 ## Cálculo del tiempo / Time calculation
 
 El tiempo dedicado es una **estimación** calculada a partir de `logstore_standard_log`: una sesión se corta cuando el hueco entre eventos supera un umbral configurable (30 min por defecto); al último evento de cada sesión se le suma una cola configurable (5 min por defecto) y el tiempo se atribuye al área o actividad del evento. Los segundos se asignan al día local (zona horaria del servidor, también en cambios de horario). Un hueco igual al umbral sigue siendo la misma sesión; un evento aislado cuenta solo la cola. Los datos se agregan de forma incremental con la tarea programada «Agregar el uso a partir del registro» (cada 15 min) y nunca se recorre el registro completo al cargar una página. Solo se guarda el uso de la plataforma y de los cursos con una acción formativa configurada.

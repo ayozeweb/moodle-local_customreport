@@ -1,7 +1,7 @@
 # STATUS
 
 ## Hito actual
-Hito 5 (Servicio web SOAP) — CERRADO. Siguiente: hito 6 (Panel de cumplimiento).
+Hito 6 (Panel de cumplimiento) — CERRADO. Todos los hitos del plan están hechos; quedan los puntos listados en «Pendiente».
 
 ## Hecho
 - Hito 1: base del plugin (version, capabilities, ajustes, cadenas en/es, privacy, CI, README, REQUISITOS).
@@ -32,6 +32,7 @@ Hito 5 (Servicio web SOAP) — CERRADO. Siguiente: hito 6 (Panel de cumplimiento
   - Tablas: `wscenter`, `wsaction`, `wscred`, `wslog`, `idoc`, `slot` (franjas horarias).
   - Corrección: `settings.php` del hito 4 no incluía los ajustes de logotipos (un reemplazo falló en silencio); reescrito y verificado en navegador.
   - Smoke test real por HTTP con las fixtures: códigos 0/1/2/-1, fallos de autenticación como SOAP Fault, WSDL por GET, HTTPS obligatorio.
+- Hito 6: `local\compliance` + `compliance.php` (sessiontimeout, rol inspector, endpoint SOAP, campos de perfil, consentimiento/tool_policy, logotipos, acciones, tarea de agregación; cada fila enlaza a su referencia en docs/REQUISITOS.md), status check `session_timeout`.
 - Validación hito 2: 17 tests PHPUnit en verde (PostgreSQL 16 local), phpcs (estándar moodle) sin avisos, instalación y actualización limpias.
 
 ## Decisiones
@@ -62,5 +63,10 @@ Hito 5 (Servicio web SOAP) — CERRADO. Siguiente: hito 6 (Panel de cumplimiento
 - R-TN-1, R-TN-2, R-TN-3 (ver docs/REQUISITOS.md).
 - El PDF del modelo de datos tiene los esquemas de petición/respuesta como imágenes: se confirmarán contra el WSDL en el hito 5.
 
+## Pendiente (no bloqueante)
+- Verificar en la CI de GitHub (pgsql 17 / MariaDB 11.4, PHP 8.3/8.4, Mustache lint): en local solo hubo PostgreSQL 16 y phpcs/PHPUnit.
+- Importar respuestas de mod_feedback a campos de perfil; UI para asignar causas de baja; aviso automático al tutor; relleno retroactivo (backfill) de uso; limitación de intentos en el endpoint SOAP; auditoría de accesibilidad automatizada.
+- TODO-NORMATIVA R-TN-1…R-TN-9 en docs/REQUISITOS.md.
+
 ## Siguiente paso
-Hito 6: panel de cumplimiento (sessiontimeout, rol inspector, endpoint SOAP, campos de perfil, consentimiento/tool_policy, logotipos) enlazado con docs/REQUISITOS.md; revisión final de README y requisitos ❌.
+Revisar el resultado de la CI en GitHub y abrir PR cuando se decida.

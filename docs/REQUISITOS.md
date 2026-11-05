@@ -39,9 +39,9 @@ Referencias: OTMS = Orden TMS/369/2019; MD = Modelo de datos SEPE (nov. 2019); W
 | R-2.6.1 | Sesiones y tiempos desde logstore (umbral y cola configurables) | OTMS Anexo V.B | `session_calculator`, `usage_aggregator`; ajustes `sessiongap`, `sessiontail` | `session_calculator_test`, `usage_aggregator_test` | ✅ |
 | R-2.6.2 | Agregación incremental por tarea programada | Diseño | Tareas `aggregate_usage` (cada 15 min), `update_progress` (horaria); marca de agua + cursor por usuario | `usage_aggregator_test` | ✅ |
 | R-2.6.3 | Documentación del método de estimación | Diseño | README.md | — | ✅ |
-| R-2.6.4 | Comprobación de `sessiontimeout` | OTMS Anexo II | (hito 6) | — | ❌ |
+| R-2.6.4 | Comprobación de `sessiontimeout` | OTMS Anexo II | `local\compliance::sessiontimeout`, `check\session_timeout`, `compliance.php` | `compliance_test::test_sessiontimeout` | ✅ |
 | R-2.7.1 | Privacy API completa (export/borrado aplazado) | RGPD / LOPDGDD | `classes/privacy/provider.php`: metadatos, export y borrado con aplazamiento (`retention`, `purge_deferred`) | `privacy_provider_test` | ✅ |
-| R-2.7.2 | Consentimiento informado integrable con tool_policy | RGPD | (hito 6) | — | ❌ |
+| R-2.7.2 | Consentimiento informado integrable con tool_policy | RGPD | Textos de consentimiento (es/en) en `legaltexts` de los perfiles; `compliance::consent` comprueba que hay una política vigente en tool_policy. La política se crea a mano en tool_policy (no se automatiza) | `compliance_test` | 🟡 |
 | R-2.7.3 | Documentos de identidad en tablas propias, solo vista inspector | RGPD | Tabla `local_customreport_idoc`; solo la usan el servicio web y `wsadmin.php`; en metadatos del provider de privacidad; capacidad `viewidentitydocuments` | `privacy_provider_test`, `sepe_service_test::test_identity` | ✅ |
 | R-4.1 | Cumple phpcs, Mustache lint, GPL en cabeceras, lang en/es | Reglas de código | CI `.github/workflows/ci.yml` | CI | 🟡 |
 | R-TN-1 | Catálogos oficiales de opciones (nivel formativo, situación laboral, tamaño de empresa, valoración, formación en teleformación del tutor) | MD (no hay catálogo cerrado en `docs/normativa/`) | opciones configurables en el asistente de campos de perfil | — | TODO-NORMATIVA |
@@ -53,3 +53,14 @@ Referencias: OTMS = Orden TMS/369/2019; MD = Modelo de datos SEPE (nov. 2019); W
 | R-TN-7 | `FORMACION_MODALIDAD_TELEFORMACION` del tutor (catálogo no completo en los documentos) y `INDICADOR_COMPETENCIAS_CLAVE` (ajuste global) | MD B11.1.8.1.6 / B12.1.2 | `sepe\builder`, ajuste `ws_keycompetence` | `test_linked_action_tracking_data` | TODO-NORMATIVA |
 | R-TN-8 | Tutorías presenciales y evaluación final presencial no se registran en Moodle: se envían vacías | MD B12.1.4.4/5 | `sepe\builder` | — | TODO-NORMATIVA |
 | R-TN-9 | `NUMERO_INTENTOS` aproximado (actividades de aprendizaje completadas); códigos de error con `ETIQUETA_ERROR` rellenada a 250 caracteres (facet del WSDL) | MD B11.1.9.4 / WSDL | `sepe\builder`, `sepe\service` | `sepe_service_test` | TODO-NORMATIVA |
+| R-6.1 | Panel de cumplimiento con comprobaciones automáticas enlazadas a esta matriz (`compliance.php`: sessiontimeout, rol inspector, endpoint SOAP, campos de perfil, consentimiento, logotipos, acciones, tarea de agregación) | Plan de hitos | `local\compliance`, `compliance.php` | `compliance_test` | ✅ |
+
+## Requisitos 🟡 pendientes y justificación
+- R-2.1.3 / R-2.1.7 / R-2.2.1 / R-2.2.3: se cubren las áreas por componente; no hay desglose de «mensajería» interna más allá de `core\event\message_sent`.
+- R-2.1.10 / R-2.1.11 / R-2.1.12: perfiles y causas existen; falta importar respuestas de `mod_feedback` y una interfaz para asignar la causa de baja.
+- R-2.2.6: el aviso automático al tutor (Message API) es opcional y no está implementado.
+- R-2.4.4: la fase «avance» se completa con lo que Moodle conoce; tutorías presenciales y evaluación final presencial se envían vacías (R-TN-8).
+- R-2.5.3: la importación de categorías de format_customtiles se limita a un aviso y un mapeo de sugerencia.
+- R-2.5.5: logotipos subidos por el administrador y mostrados en informes; no se incluyen en la exportación XML.
+- R-2.7.1: la política de privacidad aplaza el borrado durante el periodo de control; no se anonimiza.
+- R-2.1.6 / R-4.1: accesibilidad WCAG 2.1 AA revisada solo a nivel de marcado (etiquetas, captions, th scope); sin auditoría automática.

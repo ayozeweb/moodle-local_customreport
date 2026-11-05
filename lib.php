@@ -47,7 +47,7 @@ function local_customreport_extend_navigation_course(navigation_node $navigation
  * @return \core\check\check[]
  */
 function local_customreport_status_checks(): array {
-    return [new \local_customreport\check\inspector_readonly()];
+    return [new \local_customreport\check\inspector_readonly(), new \local_customreport\check\session_timeout()];
 }
 
 /**

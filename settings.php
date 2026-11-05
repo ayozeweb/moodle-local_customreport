@@ -101,6 +101,7 @@ if ($hassiteconfig) {
         'local_customreport_presets' => ['presets', 'presets.php'],
         'local_customreport_profilefields' => ['profilefieldswizard', 'profilefields.php'],
         'local_customreport_wsadmin' => ['wsadmin', 'wsadmin.php'],
+        'local_customreport_compliance' => ['compliancepanel', 'compliance.php'],
     ];
     foreach ($pages as $name => [$string, $file]) {
         $ADMIN->add('localplugins', new admin_externalpage(
