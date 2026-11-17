@@ -81,6 +81,10 @@ class access {
         if (self::is_admin_reader() || has_capability('moodle/site:accessallgroups', $context)) {
             return $ids;
         }
+        // Moodle rule: groups only restrict what a teacher sees when the course uses separate groups.
+        if (groups_get_course_groupmode(get_course($action->courseid)) != SEPARATEGROUPS) {
+            return $ids;
+        }
         $mine = [];
         foreach (groups_get_all_groups($action->courseid, $viewerid) as $group) {
             $mine = array_merge($mine, array_map('intval', array_keys(groups_get_members($group->id, 'u.id'))));

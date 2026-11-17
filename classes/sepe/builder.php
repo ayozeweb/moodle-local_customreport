@@ -106,18 +106,73 @@ class builder {
      * @return int[]
      */
     private function learner_ids(): array {
+        return self::learners_of($this->action);
+    }
+
+    /**
+     * Learners of an action: users with progress rows, limited to the group when the action is a group.
+     *
+     * @param \stdClass $action
+     * @return int[]
+     */
+    public static function learners_of(\stdClass $action): array {
         global $DB;
         $ids = array_map('intval', $DB->get_fieldset_select(
             'local_customreport_progress',
             'DISTINCT userid',
             'courseid = ?',
-            [$this->action->courseid]
+            [$action->courseid]
         ));
-        if ($this->action->groupid) {
-            $members = array_map('intval', array_keys(groups_get_members($this->action->groupid, 'u.id')));
+        if ($action->groupid) {
+            $members = array_map('intval', array_keys(groups_get_members($action->groupid, 'u.id')));
             $ids = array_values(array_intersect($ids, $members));
         }
         return $ids;
+    }
+
+    /**
+     * Tutors-trainers of an action: active enrolled users who can see group reports.
+     *
+     * @param \stdClass $action
+     * @return int[]
+     */
+    public static function tutors_of(\stdClass $action): array {
+        $context = \context_course::instance($action->courseid);
+        $users = get_enrolled_users(
+            $context,
+            'local/customreport:viewgroupreports',
+            (int) $action->groupid,
+            'u.id',
+            null,
+            0,
+            0,
+            true
+        );
+        return array_map('intval', array_keys($users));
+    }
+
+    /**
+     * Learners and tutors that cannot be reported to the administration because they have no identity document.
+     *
+     * @param \stdClass $action
+     * @return int[][] ['learners' => userids, 'tutors' => userids]
+     */
+    public static function missing_identity(\stdClass $action): array {
+        global $DB;
+        $missing = ['learners' => [], 'tutors' => []];
+        foreach (['learners' => self::learners_of($action), 'tutors' => self::tutors_of($action)] as $kind => $ids) {
+            if ($ids) {
+                [$insql, $params] = $DB->get_in_or_equal($ids);
+                $with = array_map('intval', $DB->get_fieldset_select(
+                    'local_customreport_idoc',
+                    'userid',
+                    "userid $insql",
+                    $params
+                ));
+                $missing[$kind] = array_values(array_diff($ids, $with));
+            }
+        }
+        return $missing;
     }
 
     /**
@@ -178,19 +233,9 @@ class builder {
     private function tutors(int $courseid): array {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/user/profile/lib.php');
-        $context = \context_course::instance($courseid);
-        $users = get_enrolled_users(
-            $context,
-            'local/customreport:viewgroupreports',
-            (int) $this->action->groupid,
-            'u.id',
-            null,
-            0,
-            0,
-            true
-        );
         $result = [];
-        foreach ($users as $user) {
+        foreach (self::tutors_of($this->action) as $userid) {
+            $user = (object) ['id' => $userid];
             $idoc = $DB->get_record('local_customreport_idoc', ['userid' => $user->id]);
             if (!$idoc) {
                 continue;

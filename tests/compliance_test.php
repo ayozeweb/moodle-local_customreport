@@ -125,7 +125,7 @@ final class compliance_test extends \advanced_testcase {
         $this->assertSame(compliance::WARNING, compliance::overall([['status' => 'ok'], ['status' => 'warning']]));
         $this->assertSame(compliance::OK, compliance::overall([['status' => 'ok']]));
         $all = compliance::run();
-        $this->assertCount(8, $all);
+        $this->assertCount(9, $all);
         foreach ($all as $check) {
             $this->assertMatchesRegularExpression('/^R-/', $check['ref']);
         }

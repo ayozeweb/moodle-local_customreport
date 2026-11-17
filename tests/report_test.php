@@ -267,4 +267,27 @@ final class report_test extends \advanced_testcase {
         $this->assertSame('0:00', presenter::duration(0));
         $this->assertSame('-', presenter::grade(null));
     }
+
+    /**
+     * A non-editing teacher (without accessallgroups) sees every learner when the course does not use separate
+     * groups, and only the learners of their groups when it does.
+     */
+    public function test_tutor_visibility_follows_group_mode(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $d = $this->build();
+        $g = $this->getDataGenerator();
+        $tutor = $g->create_and_enrol($d['course'], 'teacher');
+        $this->setUser($tutor);
+        $this->assertEqualsCanonicalizing([(int) $d['ana']->id, (int) $d['bea']->id], access::visible_learners($d['action']));
+
+        $DB->set_field('course', 'groupmode', SEPARATEGROUPS, ['id' => $d['course']->id]);
+        $DB->set_field('course', 'groupmodeforce', 1, ['id' => $d['course']->id]);
+        \core_course\modinfo::purge_course_caches([$d['course']->id]);
+        $this->assertSame([], access::visible_learners($d['action']));
+        $group = $g->create_group(['courseid' => $d['course']->id]);
+        $g->create_group_member(['groupid' => $group->id, 'userid' => $d['ana']->id]);
+        $g->create_group_member(['groupid' => $group->id, 'userid' => $tutor->id]);
+        $this->assertSame([(int) $d['ana']->id], access::visible_learners($d['action']));
+    }
 }

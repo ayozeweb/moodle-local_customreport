@@ -55,6 +55,7 @@ class compliance {
             self::branding(),
             self::actions(),
             self::cron(),
+            self::identity_documents(),
         ];
         return $checks;
     }
@@ -255,6 +256,33 @@ class compliance {
             return self::result('actions', 'R-2.5.1', self::WARNING, implode(' ', $problems));
         }
         return self::result('actions', 'R-2.5.1', self::OK, get_string('cc_actions_ok', 'local_customreport', count($actions)));
+    }
+
+    /**
+     * Every learner and tutor of the actions linked to the web service has an identity document; those without one
+     * are left out of what is sent to the administration.
+     *
+     * @return array
+     */
+    public static function identity_documents(): array {
+        global $DB;
+        $url = new \moodle_url('/local/customreport/wsadmin.php');
+        $problems = [];
+        $sql = "SELECT a.*
+                  FROM {local_customreport_action} a
+                  JOIN {local_customreport_wsaction} w ON w.actionid = a.id";
+        foreach ($DB->get_records_sql($sql) as $action) {
+            $missing = \local_customreport\sepe\builder::missing_identity($action);
+            if ($missing['learners'] || $missing['tutors']) {
+                $problems[] = get_string('cc_idoc_missing', 'local_customreport', (object) [
+                    'action' => $action->actioncode ?: ('#' . $action->id),
+                    'learners' => count($missing['learners']), 'tutors' => count($missing['tutors'])]);
+            }
+        }
+        if ($problems) {
+            return self::result('identitydocs', 'R-2.7.3', self::ERROR, implode(' ', $problems), $url);
+        }
+        return self::result('identitydocs', 'R-2.7.3', self::OK, get_string('cc_idoc_ok', 'local_customreport'), $url);
     }
 
     /**

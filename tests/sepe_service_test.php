@@ -323,6 +323,19 @@ final class sepe_service_test extends \advanced_testcase {
             'docnumber' => '  X1234567', 'docletter' => 'L', 'timemodified' => time()]);
         progress_calculator::update_course($course->id);
 
+        // Before the documents are stored, both users are reported as missing (and would be left out).
+        $DB->delete_records('local_customreport_idoc');
+        $missing = \local_customreport\sepe\builder::missing_identity(action_manager::get($course->id));
+        $this->assertSame([(int) $ana->id], $missing['learners']);
+        $this->assertSame([(int) $tutor->id], $missing['tutors']);
+        $check = \local_customreport\local\compliance::identity_documents();
+        $this->assertSame('error', $check['status']);
+        $DB->insert_record('local_customreport_idoc', (object) ['userid' => $ana->id, 'doctype' => 'D',
+            'docnumber' => '  12345678', 'docletter' => 'Z', 'timemodified' => time()]);
+        $DB->insert_record('local_customreport_idoc', (object) ['userid' => $tutor->id, 'doctype' => 'E',
+            'docnumber' => '  X1234567', 'docletter' => 'L', 'timemodified' => time()]);
+        $this->assertSame('ok', \local_customreport\local\compliance::identity_documents()['status']);
+
         $result = $this->call('obtenerAccion');
         $this->assertSame(0, $this->code($result)[0]);
         $this->assert_schema_valid($result);
