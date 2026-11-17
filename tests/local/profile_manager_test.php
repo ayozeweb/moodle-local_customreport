@@ -130,4 +130,25 @@ final class profile_manager_test extends \advanced_testcase {
         $record = profile_manager::import_json($json);
         $this->assertSame('empresa', $record->shortname);
     }
+
+    /**
+     * Catalogues: the SEPE profile restricts codes, the generic one does not; malformed catalogues are rejected.
+     */
+    public function test_catalogues(): void {
+        $this->resetAfterTest();
+        profile_manager::install_builtin();
+        $this->assertSame(['10', '20', '30', '40', '50'], profile_manager::catalogue('sepe_sce_tms369', 'situation'));
+        $this->assertNull(profile_manager::catalogue('generico', 'situation'));
+        $this->assertSame(['TF', 'PR', 'PE'], profile_manager::catalogue_union('modality'));
+
+        $data = $this->valid();
+        $data['catalogues'] = ['situation' => []];
+        $this->assertContains('catalogues', profile_manager::validate($data));
+        $data['catalogues'] = ['unknown' => ['A']];
+        $this->assertContains('catalogues', profile_manager::validate($data));
+        $data['catalogues'] = ['modality' => ['TF', 3]];
+        $this->assertContains('catalogues', profile_manager::validate($data));
+        $data['catalogues'] = ['modality' => ['TF']];
+        $this->assertSame([], profile_manager::validate($data));
+    }
 }

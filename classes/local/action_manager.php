@@ -28,17 +28,8 @@ namespace local_customreport\local;
  * CRUD and validation for training actions (a course or a group inside a course).
  */
 class action_manager {
-    /** @var int[] Allowed situations (MD B2): requested, authorised, started, finished, cancelled. */
-    const SITUATIONS = [10, 20, 30, 40, 50];
-
-    /** @var string[] Allowed modalities (MD B11.1.5). */
-    const MODALITIES = ['TF', 'PR', 'PE'];
-
     /** @var string[] Optional text columns, stored as '' when not given. */
     const TEXT_FIELDS = ['authority', 'actioncode', 'centercode', 'areacode', 'specialtycode', 'name', 'contact'];
-
-    /** @var string[] Allowed financing types (MD B8). */
-    const FINANCING = ['PU', 'PR'];
 
     /**
      * Validate action data.
@@ -48,14 +39,14 @@ class action_manager {
      */
     public static function validate(\stdClass $data): array {
         $errors = [];
-        if (!in_array((int) ($data->situation ?? 0), self::SITUATIONS, true)) {
-            $errors['situation'] = 'err_situation';
-        }
-        if (!in_array($data->modality ?? '', self::MODALITIES, true)) {
-            $errors['modality'] = 'err_modality';
-        }
-        if (!in_array($data->financing ?? '', self::FINANCING, true)) {
-            $errors['financing'] = 'err_financing';
+        // Allowed codes come from the regulatory profile (e.g. the SEPE data model); a profile without a
+        // catalogue does not restrict the field.
+        $profile = (string) ($data->profile ?? 'generico');
+        foreach (profile_manager::CATALOGUES as $field) {
+            $allowed = profile_manager::catalogue($profile, $field);
+            if ($allowed !== null && !in_array((string) ($data->$field ?? ''), $allowed, true)) {
+                $errors[$field] = 'err_' . $field;
+            }
         }
         // The WSDL (codigo_centro) allows up to 16 characters for the centre code.
         if (($data->centercode ?? '') !== '' && !preg_match('/^[0-9A-Za-z]{1,16}$/', $data->centercode)) {

@@ -35,7 +35,10 @@ final class action_manager_test extends \advanced_testcase {
      * Valid data passes validation; wrong values produce errors.
      */
     public function test_validate(): void {
-        $data = (object) ['situation' => 20, 'modality' => 'TF', 'financing' => 'PR', 'centercode' => '8000000000000001'];
+        $this->resetAfterTest();
+        profile_manager::install_builtin();
+        $data = (object) ['profile' => 'sepe_sce_tms369', 'situation' => 20, 'modality' => 'TF', 'financing' => 'PR',
+            'centercode' => '8000000000000001'];
         $this->assertSame([], action_manager::validate($data));
 
         $data->situation = 25;
@@ -49,6 +52,10 @@ final class action_manager_test extends \advanced_testcase {
             ['situation', 'modality', 'financing', 'centercode', 'endplanned'],
             array_keys($errors)
         );
+
+        // The generic profile defines no catalogues: the same codes are not restricted.
+        $data->profile = 'generico';
+        $this->assertEqualsCanonicalizing(['centercode', 'endplanned'], array_keys(action_manager::validate($data)));
     }
 
     /**

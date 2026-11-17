@@ -125,5 +125,14 @@ function xmldb_local_customreport_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026110407, 'local', 'customreport');
     }
 
+    if ($oldversion < 2026110409) {
+        // The default regulatory profile is the neutral one; SEPE codes now live in the SEPE profile (catalogues).
+        $table = new xmldb_table('local_customreport_action');
+        $field = new xmldb_field('profile', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, 'generico', 'groupid');
+        $dbman->change_field_default($table, $field);
+        \local_customreport\local\profile_manager::install_builtin();
+        upgrade_plugin_savepoint(true, 2026110409, 'local', 'customreport');
+    }
+
     return true;
 }

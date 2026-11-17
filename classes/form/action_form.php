@@ -66,21 +66,21 @@ class action_form extends \moodleform {
         $mform->setType('areacode', PARAM_ALPHANUM);
         $mform->addElement('text', 'specialtycode', get_string('specialtycode', 'local_customreport'), ['size' => 30]);
         $mform->setType('specialtycode', PARAM_ALPHANUMEXT);
-        $situations = [];
-        foreach (action_manager::SITUATIONS as $code) {
-            $situations[$code] = get_string('situation_' . $code, 'local_customreport');
+        // Options come from the catalogues of the installed regulatory profiles; validation checks the chosen one.
+        $sm = get_string_manager();
+        foreach (profile_manager::CATALOGUES as $field) {
+            $options = [];
+            foreach (profile_manager::catalogue_union($field) as $code) {
+                $key = $field . '_' . $code;
+                $options[$code] = $sm->string_exists($key, 'local_customreport') ? get_string($key, 'local_customreport') : $code;
+            }
+            if ($options) {
+                $mform->addElement('select', $field, get_string($field, 'local_customreport'), $options);
+                if ($field === 'situation' && isset($options['20'])) {
+                    $mform->setDefault('situation', '20');
+                }
+            }
         }
-        $mform->addElement('select', 'situation', get_string('situation', 'local_customreport'), $situations);
-        $mform->setDefault('situation', 20);
-        $mform->addElement('select', 'modality', get_string('modality', 'local_customreport'), [
-            'TF' => get_string('modality_TF', 'local_customreport'),
-            'PR' => get_string('modality_PR', 'local_customreport'),
-            'PE' => get_string('modality_PE', 'local_customreport'),
-        ]);
-        $mform->addElement('select', 'financing', get_string('financing', 'local_customreport'), [
-            'PR' => get_string('financing_PR', 'local_customreport'),
-            'PU' => get_string('financing_PU', 'local_customreport'),
-        ]);
         $mform->addElement('advcheckbox', 'fullitinerary', get_string('fullitinerary', 'local_customreport'));
         $mform->setDefault('fullitinerary', 1);
         $mform->addElement('text', 'hours', get_string('hours', 'local_customreport'), ['size' => 6]);

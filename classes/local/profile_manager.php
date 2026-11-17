@@ -33,6 +33,9 @@ class profile_manager {
     /** @var int Supported JSON schema version. */
     const SCHEMA = 1;
 
+    /** @var string[] Catalogues a profile may define to restrict action fields. */
+    const CATALOGUES = ['situation', 'modality', 'financing'];
+
     /** @var string[] Built-in profile files in presets/. */
     const BUILTIN = ['sepe_sce_tms369', 'generico', 'empresa'];
 
@@ -86,7 +89,47 @@ class profile_manager {
         if (empty($consent->en) || empty($consent->es)) {
             $errors[] = 'legaltexts';
         }
+        // Optional catalogues of allowed codes, e.g. the situations of the SEPE data model.
+        if (isset($data->catalogues)) {
+            $catalogues = (array) $data->catalogues;
+            foreach ($catalogues as $name => $values) {
+                if (
+                    !in_array($name, self::CATALOGUES, true) || !is_array($values) || !$values
+                        || array_filter($values, fn($v) => !is_string($v) || $v === '')
+                ) {
+                    $errors[] = 'catalogues';
+                    break;
+                }
+            }
+        }
         return $errors;
+    }
+
+    /**
+     * Allowed codes of a catalogue in a profile.
+     *
+     * @param string $shortname Profile.
+     * @param string $name Catalogue (one of CATALOGUES).
+     * @return string[]|null Null when the profile does not restrict that field.
+     */
+    public static function catalogue(string $shortname, string $name): ?array {
+        $profile = self::get($shortname);
+        $values = $profile->catalogues->$name ?? null;
+        return is_array($values) ? array_map('strval', $values) : null;
+    }
+
+    /**
+     * Codes of a catalogue across all installed profiles (for selection menus).
+     *
+     * @param string $name
+     * @return string[]
+     */
+    public static function catalogue_union(string $name): array {
+        $codes = [];
+        foreach (array_keys(self::get_menu()) as $shortname) {
+            $codes = array_merge($codes, self::catalogue($shortname, $name) ?? []);
+        }
+        return array_values(array_unique($codes));
     }
 
     /**

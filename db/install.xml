@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/customreport/db" VERSION="2026110407" COMMENT="XMLDB file for Moodle local/customreport"
+<XMLDB PATH="local/customreport/db" VERSION="2026110409" COMMENT="XMLDB file for Moodle local/customreport"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -25,7 +25,7 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="groupid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 means the whole course"/>
-        <FIELD NAME="profile" TYPE="char" LENGTH="50" NOTNULL="true" DEFAULT="sepe_sce_tms369" SEQUENCE="false"/>
+        <FIELD NAME="profile" TYPE="char" LENGTH="50" NOTNULL="true" DEFAULT="generico" SEQUENCE="false"/>
         <FIELD NAME="authority" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Competent administration (SEPE, SCE...)"/>
         <FIELD NAME="actionorigin" TYPE="char" LENGTH="2" NOTNULL="true" DEFAULT="20" SEQUENCE="false"/>
         <FIELD NAME="actioncode" TYPE="char" LENGTH="30" NOTNULL="true" SEQUENCE="false"/>
