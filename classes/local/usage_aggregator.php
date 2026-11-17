@@ -89,27 +89,39 @@ class usage_aggregator {
         $this->courses = $DB->get_fieldset_select('local_customreport_action', 'DISTINCT courseid', '1=1');
         $total = 0;
 
+        // Rows are read strictly in id order and the watermark never jumps over a row that is not processed yet:
+        // reading stops at the first row newer than the horizon, even if rows with higher ids are older (the log
+        // store can write buffered events late). Filtering by time in SQL would skip such rows forever.
         do {
             $rows = $DB->get_records_select(
                 'logstore_standard_log',
-                'id > :wm AND timecreated <= :horizon AND userid > 0',
-                ['wm' => $watermark, 'horizon' => $horizon],
+                'id > :wm',
+                ['wm' => $watermark],
                 'id ASC',
                 'id, userid, relateduserid, courseid, contextlevel, contextinstanceid, component, eventname, '
                 . 'action, crud, edulevel, timecreated',
                 0,
                 self::CHUNK
             );
-            if (!$rows) {
+            $ready = [];
+            $blocked = false;
+            foreach ($rows as $id => $row) {
+                if ((int) $row->timecreated > $horizon) {
+                    $blocked = true;
+                    break;
+                }
+                $ready[$id] = $row;
+            }
+            if (!$ready) {
                 break;
             }
             $transaction = $DB->start_delegated_transaction();
-            $this->process_rows($rows);
-            $watermark = (int) max(array_keys($rows));
+            $this->process_rows(array_filter($ready, fn($row) => (int) $row->userid > 0));
+            $watermark = (int) array_key_last($ready);
             set_config('usagewatermark', $watermark, 'local_customreport');
             $transaction->allow_commit();
-            $total += count($rows);
-        } while (count($rows) === self::CHUNK);
+            $total += count($ready);
+        } while (!$blocked && count($rows) === self::CHUNK);
 
         $this->close_idle_sessions($horizon);
         return $total;

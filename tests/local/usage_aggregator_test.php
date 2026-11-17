@@ -191,4 +191,26 @@ final class usage_aggregator_test extends \advanced_testcase {
         $this->assertSame(1, (int) $slots[2]->accesses);
         $this->assertSame(300, (int) $slots[2]->seconds);
     }
+
+    /**
+     * A row with a lower id but a time after the horizon must not be skipped when a later row (higher id,
+     * older time, e.g. a buffered log write) is processed first.
+     */
+    public function test_out_of_order_ids_are_not_lost(): void {
+        global $DB;
+        $this->resetAfterTest();
+        [$course, $user] = $this->setup_action();
+        $base = ['userid' => $user->id, 'courseid' => $course->id];
+        $now = self::T0 + 10000;
+        // Lower id, recent time (inside the gap of "now": cannot be processed yet).
+        $this->log($base + ['timecreated' => $now - 60, 'eventname' => '\mod_forum\event\post_created',
+            'component' => 'mod_forum', 'action' => 'created', 'crud' => 'c']);
+        // Higher id, old time.
+        $this->log($base + ['timecreated' => self::T0]);
+        $aggregator = new usage_aggregator(1800, 300, new \DateTimeZone('UTC'));
+        $aggregator->run($now);
+        $aggregator->run($now + 5 * HOURSECS);
+        $this->assertSame(2, (int) $DB->get_field_sql('SELECT SUM(events) FROM {local_customreport_usage}'));
+        $this->assertSame(1, (int) $DB->get_field_sql('SELECT SUM(participations) FROM {local_customreport_usage}'));
+    }
 }
