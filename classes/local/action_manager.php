@@ -34,6 +34,9 @@ class action_manager {
     /** @var string[] Allowed modalities (MD B11.1.5). */
     const MODALITIES = ['TF', 'PR', 'PE'];
 
+    /** @var string[] Optional text columns, stored as '' when not given. */
+    const TEXT_FIELDS = ['authority', 'actioncode', 'centercode', 'areacode', 'specialtycode', 'name', 'contact'];
+
     /** @var string[] Allowed financing types (MD B8). */
     const FINANCING = ['PU', 'PR'];
 
@@ -112,8 +115,14 @@ class action_manager {
     public static function save(\stdClass $data): int {
         global $DB;
         $now = time();
-        $data->timemodified = $now;
         $existing = self::get((int) $data->courseid, (int) $data->groupid);
+        // Text columns are NOT NULL without a database default: always send a value.
+        foreach (self::TEXT_FIELDS as $field) {
+            if (!isset($data->$field)) {
+                $data->$field = $existing->$field ?? '';
+            }
+        }
+        $data->timemodified = $now;
         if ($existing) {
             $data->id = $existing->id;
             $DB->update_record('local_customreport_action', $data);

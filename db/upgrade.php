@@ -93,5 +93,37 @@ function xmldb_local_customreport_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026110406, 'local', 'customreport');
     }
 
+    if ($oldversion < 2026110407) {
+        // CHAR NOT NULL columns must not declare an empty default (XMLDB rule); drop it.
+        $fields = [
+            'local_customreport_action' => ['authority', 'actioncode', 'centercode', 'areacode', 'specialtycode', 'name',
+                'contact'],
+            'local_customreport_module' => ['code', 'name'],
+            'local_customreport_usage' => ['component'],
+            'local_customreport_cursor' => ['lastcomponent'],
+            'local_customreport_wslog' => ['operation', 'username', 'remoteaddr'],
+        ];
+        $xmldb = new xmldb_file($CFG->dirroot . '/local/customreport/db/install.xml');
+        $xmldb->loadXMLStructure();
+        $structure = $xmldb->getStructure();
+        foreach ($fields as $tablename => $names) {
+            $xmltable = $structure->getTable($tablename);
+            $table = new xmldb_table($tablename);
+            // A column inside a key cannot be altered: drop the keys that use it and add them back afterwards.
+            $keys = array_filter($xmltable->getKeys(), fn($key) => $key->getType() !== XMLDB_KEY_PRIMARY
+                && array_intersect($key->getFields(), $names));
+            foreach ($keys as $key) {
+                $dbman->drop_key($table, $key);
+            }
+            foreach ($names as $name) {
+                $dbman->change_field_default($table, $xmltable->getField($name));
+            }
+            foreach ($keys as $key) {
+                $dbman->add_key($table, $key);
+            }
+        }
+        upgrade_plugin_savepoint(true, 2026110407, 'local', 'customreport');
+    }
+
     return true;
 }
