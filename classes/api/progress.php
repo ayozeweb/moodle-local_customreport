@@ -73,7 +73,11 @@ class progress {
         if (!$action) {
             return [];
         }
-        $rows = $DB->get_records('local_customreport_progress', ['courseid' => $courseid, 'userid' => $userid], '', 'nodeid, *');
+        // Key by node id in PHP: "SELECT nodeid, *" is valid on PostgreSQL but not on MySQL/MariaDB.
+        $rows = [];
+        foreach ($DB->get_records('local_customreport_progress', ['courseid' => $courseid, 'userid' => $userid]) as $row) {
+            $rows[(int) $row->nodeid] = $row;
+        }
         $result = [];
         $total = $rows[0] ?? null;
         if ($total) {
