@@ -267,6 +267,7 @@ class provider implements core_userlist_provider, metadata_provider, plugin_prov
         foreach ($DB->get_records('local_customreport_deferred') as $request) {
             if (!retention::must_retain((int) $request->courseid, $now)) {
                 self::erase((int) $request->courseid, [(int) $request->userid], $now);
+                \local_customreport\observer::delete_actions_if_unused((int) $request->courseid);
                 $done++;
             }
         }
