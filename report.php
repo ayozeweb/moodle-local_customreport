@@ -116,5 +116,5 @@ if (!$print) {
     );
     echo html_writer::alist($links, ['class' => 'list-inline'], 'ul');
 }
-echo $OUTPUT->render_from_template('local_customreport/report', presenter::context($data, $OUTPUT, !$print || true));
+echo $OUTPUT->render_from_template('local_customreport/report', presenter::context($data, $OUTPUT));
 echo $OUTPUT->footer();

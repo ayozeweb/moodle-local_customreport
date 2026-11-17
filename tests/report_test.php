@@ -251,7 +251,6 @@ final class report_test extends \advanced_testcase {
         // Ten of twenty days elapsed (50 %), Ana completed 1 of 2 activities (50 %): on pace; Bea at 0 %: behind.
         $this->assertFalse($ind[$d['ana']->id]['behind']);
         $this->assertTrue($ind[$d['bea']->id]['behind']);
-        $this->assertFalse($ind[$d['ana']->id]['noaccess'] && false);
         $recent = indicators::for_learners($d['action'], [$d['ana']->id], $d['day'] + 3600, 7);
         $this->assertFalse($recent[$d['ana']->id]['noaccess']);
         $this->assertNull(indicators::expected_percent((object) ['startplanned' => 0, 'endplanned' => 0, 'startreal' => 0,

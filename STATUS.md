@@ -63,8 +63,22 @@ Hito 6 (Panel de cumplimiento) — CERRADO. Todos los hitos del plan están hech
 - R-TN-1, R-TN-2, R-TN-3 (ver docs/REQUISITOS.md).
 - El PDF del modelo de datos tiene los esquemas de petición/respuesta como imágenes: se confirmarán contra el WSDL en el hito 5.
 
+## Revisión de ingeniería (noviembre 2026)
+La CI de GitHub había fallado en todos los pushes de los hitos 1–6 y no se había comprobado. Corregido:
+- **CI**: `install.xml` tenía 14 columnas `CHAR NOT NULL DEFAULT=""`; Moodle emite `debugging()` y moodle-plugin-ci (modo desarrollador) abortaba la instalación. Paso de upgrade 2026110407 (con recreación de la clave única de `usage`).
+- **MariaDB**: `SELECT nodeid, *` en `api\progress` no es SQL válido en MySQL/MariaDB (en local solo se probaba PostgreSQL).
+- **Plantillas**: empezaban con la cabecera PHP, que salía en el HTML.
+- **Agregador**: la marca de agua podía saltarse filas del log escritas fuera de orden de id (pérdida silenciosa de eventos). Test de regresión.
+- **Visibilidad del tutor**: un profesor sin `accessallgroups` no veía a nadie en cursos sin grupos; ahora sigue el modo de grupos del curso.
+- **Servicio SOAP**: alumnado/tutores sin documento de identidad se omitían en silencio; nueva comprobación de cumplimiento (error).
+- **Observadores** (`db/events.php`): limpieza al borrar curso, actividad, sección o usuario, respetando la retención legal vía el provider de privacidad.
+- Duplicaciones eliminadas (secciones→actividades, regla de módulo superado) y restos de código.
+
+Lecciones: la CI es la puerta de cada hito; probar en las dos familias de BD; instalar con depuración de desarrollador.
+
 ## Pendiente (no bloqueante)
-- Verificar en la CI de GitHub (pgsql 17 / MariaDB 11.4, PHP 8.3/8.4, Mustache lint): en local solo hubo PostgreSQL 16 y phpcs/PHPUnit.
+- Constantes del modelo SEPE fuera de `presets/` (situaciones, modalidades, códigos de competencia docente y perfil por defecto en `install.xml`): mover al perfil normativo.
+- Pasos de upgrade 2026110401–07: se mantienen porque la rama ya se ha instalado; colapsarlos solo antes de la primera versión publicada.
 - Importar respuestas de mod_feedback a campos de perfil; UI para asignar causas de baja; aviso automático al tutor; relleno retroactivo (backfill) de uso; limitación de intentos en el endpoint SOAP; auditoría de accesibilidad automatizada.
 - TODO-NORMATIVA R-TN-1…R-TN-9 en docs/REQUISITOS.md.
 

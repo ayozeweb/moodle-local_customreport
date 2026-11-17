@@ -133,6 +133,21 @@ class structure_manager {
     }
 
     /**
+     * Activity ids of every section of a course, keyed by section id (sections and delegated subsections).
+     *
+     * @param int $courseid
+     * @return int[][]
+     */
+    public static function section_cms(int $courseid): array {
+        $modinfo = get_fast_modinfo($courseid);
+        $result = [];
+        foreach ($modinfo->get_section_info_all() as $section) {
+            $result[(int) $section->id] = array_map('intval', $modinfo->sections[$section->sectionnum] ?? []);
+        }
+        return $result;
+    }
+
+    /**
      * Section ids assigned more than once in the same action (a section must map to one node).
      *
      * @param int $actionid

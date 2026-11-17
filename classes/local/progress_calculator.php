@@ -38,10 +38,7 @@ class progress_calculator {
         global $DB;
         $written = 0;
         $modinfo = get_fast_modinfo($courseid);
-        $sectioncms = [];
-        foreach ($modinfo->get_section_info_all() as $section) {
-            $sectioncms[$section->id] = $modinfo->sections[$section->sectionnum] ?? [];
-        }
+        $sectioncms = structure_manager::section_cms($courseid);
         $roles = cmrole_manager::get_roles($courseid);
         $grades = self::normalised_grades($courseid);
 

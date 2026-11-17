@@ -148,11 +148,7 @@ class followup {
      * @return int[][] nodeid => cmids
      */
     public static function node_cmids(\stdClass $action, array $nodes): array {
-        $modinfo = get_fast_modinfo($action->courseid);
-        $sectioncms = [];
-        foreach ($modinfo->get_section_info_all() as $section) {
-            $sectioncms[$section->id] = $modinfo->sections[$section->sectionnum] ?? [];
-        }
+        $sectioncms = structure_manager::section_cms((int) $action->courseid);
         $result = [];
         foreach ($nodes as $node) {
             $result[(int) $node->id] = [];
@@ -267,7 +263,7 @@ class followup {
      * @param array $data
      * @return bool
      */
-    private static function node_passed(\stdClass $node, array $data): bool {
+    public static function node_passed(\stdClass $node, array $data): bool {
         if ($node->type === 'MP') {
             return $data['total'] > 0 && $data['done'] >= $data['total'];
         }

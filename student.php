@@ -67,7 +67,7 @@ foreach ($nodes as $node) {
     foreach ($nodecms[$node->id] ?? [] as $cmid) {
         $seconds += $times[$cmid] ?? 0;
     }
-    $passed = $d && ($node->type === 'MP' ? ($d['total'] > 0 && $d['done'] >= $d['total']) : !empty($d['passed']));
+    $passed = $d && followup::node_passed($node, $d);
     $rows[] = [
         'code' => $node->code, 'name' => format_string($node->name), 'hours' => (int) $node->hours,
         'done' => $d ? $d['done'] . '/' . $d['total'] : '-', 'percent' => $d ? $d['percent'] : '-',
