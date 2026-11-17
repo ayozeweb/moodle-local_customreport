@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "shortname": "generico",
+  "name": "Genérico",
+  "version": 1,
+  "passmark": 5,
+  "weights": {"process": 0.30, "final": 0.70},
+  "minfinal": 5,
+  "attempts": 2,
+  "reports": ["access", "participation", "time", "activities", "results", "finalscore", "completion"],
+  "columns": ["fullname", "firstaccess", "lastaccess", "accesses", "timespent", "activitiesdone", "finalscore"],
+  "requiredfields": [],
+  "legaltexts": {
+    "consent": {
+      "en": "Your personal data will be processed to monitor your progress in this course.",
+      "es": "Sus datos personales se tratarán para realizar el seguimiento de su progreso en este curso."
+    }
+  }
+}

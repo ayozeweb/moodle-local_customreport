@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "shortname": "empresa",
+  "name": "Empresa",
+  "version": 1,
+  "passmark": 5,
+  "weights": {"process": 0.50, "final": 0.50},
+  "minfinal": 5,
+  "attempts": 1,
+  "reports": ["access", "time", "activities", "results", "completion"],
+  "columns": ["fullname", "lastaccess", "timespent", "activitiesdone", "finalscore"],
+  "requiredfields": [],
+  "legaltexts": {
+    "consent": {
+      "en": "Your training activity data will be shared with your employer for training management purposes.",
+      "es": "Los datos de su actividad formativa se comunicarán a su empresa a efectos de gestión de la formación."
+    }
+  }
+}
