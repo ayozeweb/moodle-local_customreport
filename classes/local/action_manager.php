@@ -29,7 +29,7 @@ namespace local_customreport\local;
  */
 class action_manager {
     /** @var string[] Optional text columns, stored as '' when not given. */
-    const TEXT_FIELDS = ['authority', 'actioncode', 'centercode', 'areacode', 'specialtycode', 'name', 'contact'];
+    const TEXT_FIELDS = ['actionorigin', 'authority', 'actioncode', 'centercode', 'areacode', 'specialtycode', 'name', 'contact'];
 
     /**
      * Validate action data.
@@ -42,7 +42,7 @@ class action_manager {
         // Allowed codes come from the regulatory profile (e.g. the SEPE data model); a profile without a
         // catalogue does not restrict the field.
         $profile = (string) ($data->profile ?? 'generico');
-        foreach (profile_manager::CATALOGUES as $field) {
+        foreach (profile_manager::ACTION_CATALOGUES as $field) {
             $allowed = profile_manager::catalogue($profile, $field);
             if ($allowed !== null && !in_array((string) ($data->$field ?? ''), $allowed, true)) {
                 $errors[$field] = 'err_' . $field;
@@ -112,6 +112,11 @@ class action_manager {
             if (!isset($data->$field)) {
                 $data->$field = $existing->$field ?? '';
             }
+        }
+        // An empty origin takes the default of the regulatory profile (e.g. 20 = SEPE).
+        if ($data->actionorigin === '') {
+            $profile = (string) ($data->profile ?? $existing->profile ?? 'generico');
+            $data->actionorigin = profile_manager::default_value($profile, 'actionorigin') ?? '';
         }
         $data->timemodified = $now;
         if ($existing) {

@@ -75,11 +75,11 @@ La CI de GitHub había fallado en todos los pushes de los hitos 1–6 y no se ha
 - Duplicaciones eliminadas (secciones→actividades, regla de módulo superado) y restos de código.
 
 - Situación, modalidad y financiación ya no son constantes del código: se definen como `catalogues` en el perfil normativo (perfil SEPE v2). El perfil genérico no las restringe y es el valor por defecto de la tabla.
+- Los códigos de competencia docente (catálogo `teachingcompetence`) y el origen por defecto «20» (`defaults.actionorigin`) también pasan al perfil SEPE (v3). Sin un perfil que defina competencias, el asistente crea el campo como texto libre; un origen vacío toma el del perfil. Fuera de `presets/`, la capa SOAP y `docs/` ya no queda nada específico del SEPE.
 
 Lecciones: la CI es la puerta de cada hito; probar en las dos familias de BD; instalar con depuración de desarrollador.
 
 ## Pendiente (no bloqueante)
-- Quedan en código genérico dos detalles del modelo SEPE: los códigos de competencia docente del asistente de campos de perfil y el origen por defecto «20» de la acción. Situación, modalidad y financiación ya están en el catálogo del perfil SEPE.
 - Pasos de upgrade 2026110401–07: se mantienen porque la rama ya se ha instalado; colapsarlos solo antes de la primera versión publicada.
 - Importar respuestas de mod_feedback a campos de perfil; UI para asignar causas de baja; aviso automático al tutor; relleno retroactivo (backfill) de uso; limitación de intentos en el endpoint SOAP; auditoría de accesibilidad automatizada.
 - TODO-NORMATIVA R-TN-1…R-TN-9 en docs/REQUISITOS.md.

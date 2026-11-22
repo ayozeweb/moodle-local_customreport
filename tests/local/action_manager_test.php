@@ -102,4 +102,21 @@ final class action_manager_test extends \advanced_testcase {
         action_manager::delete($actionid);
         $this->assertSame(0, $DB->count_records('local_customreport_module'));
     }
+
+    /**
+     * An empty origin takes the default of the regulatory profile; an explicit one is kept.
+     */
+    public function test_origin_default_from_profile(): void {
+        $this->resetAfterTest();
+        profile_manager::install_builtin();
+        $course = $this->getDataGenerator()->create_course();
+        action_manager::save((object) ['courseid' => $course->id, 'groupid' => 0, 'profile' => 'sepe_sce_tms369']);
+        $this->assertSame('20', action_manager::get($course->id)->actionorigin);
+
+        $other = $this->getDataGenerator()->create_course();
+        action_manager::save((object) ['courseid' => $other->id, 'groupid' => 0, 'profile' => 'generico']);
+        $this->assertSame('', action_manager::get($other->id)->actionorigin);
+        action_manager::save((object) ['courseid' => $other->id, 'groupid' => 0, 'actionorigin' => '35']);
+        $this->assertSame('35', action_manager::get($other->id)->actionorigin);
+    }
 }

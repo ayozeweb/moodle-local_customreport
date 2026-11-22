@@ -49,8 +49,9 @@ class profile_field_wizard {
                 'tutor_teachingyears' => ['text', null],
                 'tutor_onlinehours' => ['text', null],
                 'tutor_competenceyears' => ['text', null],
-                // Teaching competence codes 01-06 (MD B11.1.8.1.4).
-                'tutor_teachingcompetence' => ['menu', ['tc01', 'tc02', 'tc03', 'tc04', 'tc05', 'tc06']],
+                // Teaching competence: codes from the regulatory profiles (the SEPE profile defines 01-06);
+                // free text when no installed profile defines them.
+                'tutor_teachingcompetence' => self::catalogue_field('teachingcompetence'),
                 'tutor_contract' => ['menu', ['contract_employee', 'contract_self', 'contract_other']],
             ];
         }
@@ -68,6 +69,20 @@ class profile_field_wizard {
             'companysize' => ['menu', ['size_micro', 'size_small', 'size_medium', 'size_large']],
             'workschedule' => ['text', null],
         ];
+    }
+
+    /**
+     * Menu field built from a catalogue of the installed profiles, or a text field when there is none.
+     *
+     * @param string $catalogue
+     * @return array [datatype, labels|null]
+     */
+    private static function catalogue_field(string $catalogue): array {
+        $codes = profile_manager::catalogue_union($catalogue);
+        if (!$codes) {
+            return ['text', null];
+        }
+        return ['menu', array_map(fn($code) => profile_manager::catalogue_label($catalogue, $code), $codes)];
     }
 
     /**
@@ -118,7 +133,10 @@ class profile_field_wizard {
                 'param5' => '',
             ];
             if ($datatype === 'menu') {
-                $labels = array_map(fn($key) => get_string('opt_' . $key, 'local_customreport'), $options);
+                // Option keys are language strings "opt_<key>"; catalogue fields already carry their labels.
+                $sm = get_string_manager();
+                $labels = array_map(fn($key) => $sm->string_exists('opt_' . $key, 'local_customreport')
+                    ? get_string('opt_' . $key, 'local_customreport') : $key, $options);
                 $field->param1 = implode("\n", $labels);
             } else if ($datatype === 'text') {
                 $field->param1 = 30;

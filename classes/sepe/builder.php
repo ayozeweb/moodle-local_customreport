@@ -25,6 +25,7 @@
 namespace local_customreport\sepe;
 
 use local_customreport\local\cmrole_manager;
+use local_customreport\local\profile_manager;
 use local_customreport\report\followup;
 
 /**
@@ -256,15 +257,15 @@ class builder {
     }
 
     /**
-     * Teaching competence code (01-06) from the stored menu label.
+     * Teaching competence code from the stored menu label (catalogue of the profiles).
      *
      * @param string $label
      * @return string
      */
     private function competence_code(string $label): string {
-        for ($i = 1; $i <= 6; $i++) {
-            if ($label === get_string('opt_tc0' . $i, 'local_customreport')) {
-                return '0' . $i;
+        foreach (profile_manager::catalogue_union('teachingcompetence') as $code) {
+            if ($label === $code || $label === profile_manager::catalogue_label('teachingcompetence', $code)) {
+                return $code;
             }
         }
         return '';

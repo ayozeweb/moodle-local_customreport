@@ -64,6 +64,7 @@ final class cmrole_and_wizard_test extends \advanced_testcase {
     public function test_wizard(): void {
         global $DB;
         $this->resetAfterTest();
+        profile_manager::install_builtin();
         foreach (['learner', 'tutor'] as $audience) {
             $expected = count(profile_field_wizard::definitions($audience));
             $this->assertCount($expected, profile_field_wizard::missing_fields($audience));
@@ -73,6 +74,21 @@ final class cmrole_and_wizard_test extends \advanced_testcase {
         }
         $field = $DB->get_record('user_info_field', ['shortname' => 'cr_tutor_teachingcompetence']);
         $this->assertSame('menu', $field->datatype);
-        $this->assertCount(6, explode("\n", $field->param1));
+        $options = explode("\n", $field->param1);
+        $this->assertCount(6, $options);
+        $this->assertSame(get_string('teachingcompetence_01', 'local_customreport'), $options[0]);
+    }
+
+    /**
+     * Without a profile that defines teaching competence codes the field is free text.
+     */
+    public function test_wizard_without_competence_catalogue(): void {
+        global $DB;
+        $this->resetAfterTest();
+        profile_manager::install_builtin();
+        $DB->delete_records('local_customreport_profile', ['shortname' => 'sepe_sce_tms369']);
+        profile_field_wizard::create_fields('tutor');
+        $field = $DB->get_record('user_info_field', ['shortname' => 'cr_tutor_teachingcompetence']);
+        $this->assertSame('text', $field->datatype);
     }
 }

@@ -33,8 +33,14 @@ class profile_manager {
     /** @var int Supported JSON schema version. */
     const SCHEMA = 1;
 
-    /** @var string[] Catalogues a profile may define to restrict action fields. */
-    const CATALOGUES = ['situation', 'modality', 'financing'];
+    /** @var string[] Catalogues of codes a profile may define. */
+    const CATALOGUES = ['situation', 'modality', 'financing', 'teachingcompetence'];
+
+    /** @var string[] Catalogues that restrict fields of a training action. */
+    const ACTION_CATALOGUES = ['situation', 'modality', 'financing'];
+
+    /** @var string[] Default values a profile may define for new actions. */
+    const DEFAULTS = ['actionorigin'];
 
     /** @var string[] Built-in profile files in presets/. */
     const BUILTIN = ['sepe_sce_tms369', 'generico', 'empresa'];
@@ -102,7 +108,39 @@ class profile_manager {
                 }
             }
         }
+        if (isset($data->defaults)) {
+            foreach ((array) $data->defaults as $name => $value) {
+                if (!in_array($name, self::DEFAULTS, true) || !is_string($value)) {
+                    $errors[] = 'defaults';
+                    break;
+                }
+            }
+        }
         return $errors;
+    }
+
+    /**
+     * Default value a profile defines for a field of new actions.
+     *
+     * @param string $shortname Profile.
+     * @param string $name One of DEFAULTS.
+     * @return string|null Null when the profile defines none.
+     */
+    public static function default_value(string $shortname, string $name): ?string {
+        $value = self::get($shortname)->defaults->$name ?? null;
+        return is_string($value) ? $value : null;
+    }
+
+    /**
+     * Human label of a catalogue code: the language string "<catalogue>_<code>" when it exists, else the code.
+     *
+     * @param string $name Catalogue.
+     * @param string $code
+     * @return string
+     */
+    public static function catalogue_label(string $name, string $code): string {
+        $key = $name . '_' . $code;
+        return get_string_manager()->string_exists($key, 'local_customreport') ? get_string($key, 'local_customreport') : $code;
     }
 
     /**

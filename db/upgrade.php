@@ -134,5 +134,14 @@ function xmldb_local_customreport_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026110409, 'local', 'customreport');
     }
 
+    if ($oldversion < 2026112200) {
+        // The SEPE origin "20" is now a default of the SEPE profile, not of the table.
+        $table = new xmldb_table('local_customreport_action');
+        $field = new xmldb_field('actionorigin', XMLDB_TYPE_CHAR, '2', null, XMLDB_NOTNULL, null, null, 'authority');
+        $dbman->change_field_default($table, $field);
+        \local_customreport\local\profile_manager::install_builtin();
+        upgrade_plugin_savepoint(true, 2026112200, 'local', 'customreport');
+    }
+
     return true;
 }

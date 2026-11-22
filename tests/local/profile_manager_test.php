@@ -151,4 +151,25 @@ final class profile_manager_test extends \advanced_testcase {
         $data['catalogues'] = ['modality' => ['TF']];
         $this->assertSame([], profile_manager::validate($data));
     }
+
+    /**
+     * Defaults: read from the SEPE profile and validated on import.
+     */
+    public function test_defaults(): void {
+        $this->resetAfterTest();
+        profile_manager::install_builtin();
+        $this->assertSame('20', profile_manager::default_value('sepe_sce_tms369', 'actionorigin'));
+        $this->assertNull(profile_manager::default_value('generico', 'actionorigin'));
+        $codes = profile_manager::catalogue('sepe_sce_tms369', 'teachingcompetence');
+        $this->assertSame(['01', '02', '03', '04', '05', '06'], $codes);
+        $this->assertSame('XX', profile_manager::catalogue_label('modality', 'XX'));
+
+        $data = $this->valid();
+        $data['defaults'] = ['unknown' => 'x'];
+        $this->assertContains('defaults', profile_manager::validate($data));
+        $data['defaults'] = ['actionorigin' => 20];
+        $this->assertContains('defaults', profile_manager::validate($data));
+        $data['defaults'] = ['actionorigin' => '20'];
+        $this->assertSame([], profile_manager::validate($data));
+    }
 }

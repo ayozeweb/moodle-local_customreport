@@ -56,7 +56,7 @@ class action_form extends \moodleform {
         $mform->addElement('header', 'identhdr', get_string('identification', 'local_customreport'));
         $mform->addElement('text', 'actionorigin', get_string('actionorigin', 'local_customreport'), ['size' => 3]);
         $mform->setType('actionorigin', PARAM_ALPHANUM);
-        $mform->setDefault('actionorigin', '20');
+        $mform->addHelpButton('actionorigin', 'actionorigin', 'local_customreport');
         $mform->addElement('text', 'actioncode', get_string('actioncode', 'local_customreport'), ['size' => 30]);
         $mform->setType('actioncode', PARAM_ALPHANUMEXT);
         $mform->addElement('text', 'centercode', get_string('centercode', 'local_customreport'), ['size' => 12]);
@@ -67,12 +67,10 @@ class action_form extends \moodleform {
         $mform->addElement('text', 'specialtycode', get_string('specialtycode', 'local_customreport'), ['size' => 30]);
         $mform->setType('specialtycode', PARAM_ALPHANUMEXT);
         // Options come from the catalogues of the installed regulatory profiles; validation checks the chosen one.
-        $sm = get_string_manager();
-        foreach (profile_manager::CATALOGUES as $field) {
+        foreach (profile_manager::ACTION_CATALOGUES as $field) {
             $options = [];
             foreach (profile_manager::catalogue_union($field) as $code) {
-                $key = $field . '_' . $code;
-                $options[$code] = $sm->string_exists($key, 'local_customreport') ? get_string($key, 'local_customreport') : $code;
+                $options[$code] = profile_manager::catalogue_label($field, $code);
             }
             if ($options) {
                 $mform->addElement('select', $field, get_string($field, 'local_customreport'), $options);
