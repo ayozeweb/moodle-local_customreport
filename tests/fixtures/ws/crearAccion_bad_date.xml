@@ -1,0 +1,51 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+    xmlns:impl="http://impl.ws.application.proveedorcentro.meyss.spee.es"
+    xmlns:entsal="http://entsal.bean.domain.common.proveedorcentro.meyss.spee.es">
+  <soapenv:Header>
+    <wsse:Security>
+      <wsse:UsernameToken>
+        <wsse:Username>sepe</wsse:Username>
+        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">s3cret-pass</wsse:Password>
+      </wsse:UsernameToken>
+    </wsse:Security>
+  </soapenv:Header>
+  <soapenv:Body>
+    <impl:crearAccion>
+      <entsal:ACCION_FORMATIVA>
+        <ID_ACCION><ORIGEN_ACCION>20</ORIGEN_ACCION><CODIGO_ACCION>2026280010                    </CODIGO_ACCION></ID_ACCION>
+        <SITUACION>20</SITUACION>
+        <ID_ESPECIALIDAD_PRINCIPAL><ORIGEN_ESPECIALIDAD>20</ORIGEN_ESPECIALIDAD><AREA_PROFESIONAL>IFCD</AREA_PROFESIONAL><CODIGO_ESPECIALIDAD>IFCD0112      </CODIGO_ESPECIALIDAD></ID_ESPECIALIDAD_PRINCIPAL>
+        <DURACION>100</DURACION>
+        <FECHA_INICIO>2026-12-01</FECHA_INICIO>
+        <FECHA_FIN>31/01/2027</FECHA_FIN>
+        <IND_ITINERARIO_COMPLETO>SI</IND_ITINERARIO_COMPLETO>
+        <TIPO_FINANCIACION>PR</TIPO_FINANCIACION>
+        <NUMERO_ASISTENTES>25</NUMERO_ASISTENTES>
+        <DESCRIPCION_ACCION>
+          <DENOMINACION_ACCION>Programacion de aplicaciones</DENOMINACION_ACCION>
+          <INFORMACION_GENERAL>Informacion general</INFORMACION_GENERAL>
+          <HORARIOS>Libre</HORARIOS>
+          <REQUISITOS>Ninguno</REQUISITOS>
+          <CONTACTO_ACCION>info@example.com</CONTACTO_ACCION>
+        </DESCRIPCION_ACCION>
+        <ESPECIALIDADES_ACCION>
+          <ESPECIALIDAD>
+            <ID_ESPECIALIDAD><ORIGEN_ESPECIALIDAD>20</ORIGEN_ESPECIALIDAD><AREA_PROFESIONAL>IFCD</AREA_PROFESIONAL><CODIGO_ESPECIALIDAD>IFCD0112      </CODIGO_ESPECIALIDAD></ID_ESPECIALIDAD>
+            <CENTRO_IMPARTICION><ORIGEN_CENTRO>20</ORIGEN_CENTRO><CODIGO_CENTRO>8000000000000001</CODIGO_CENTRO></CENTRO_IMPARTICION>
+            <FECHA_INICIO>01/12/2026</FECHA_INICIO>
+            <FECHA_FIN>31/01/2027</FECHA_FIN>
+            <MODALIDAD_IMPARTICION>TF</MODALIDAD_IMPARTICION>
+            <DATOS_DURACION><HORAS_PRESENCIAL>0</HORAS_PRESENCIAL><HORAS_TELEFORMACION>100</HORAS_TELEFORMACION></DATOS_DURACION>
+            <CENTROS_SESIONES_PRESENCIALES>
+              <CENTRO_PRESENCIAL><ORIGEN_CENTRO>20</ORIGEN_CENTRO><CODIGO_CENTRO>8000000000000002</CODIGO_CENTRO></CENTRO_PRESENCIAL>
+            </CENTROS_SESIONES_PRESENCIALES>
+            <TUTORES_FORMADORES/>
+            <USO/>
+          </ESPECIALIDAD>
+        </ESPECIALIDADES_ACCION>
+        <PARTICIPANTES/>
+      </entsal:ACCION_FORMATIVA>
+    </impl:crearAccion>
+  </soapenv:Body>
+</soapenv:Envelope>
