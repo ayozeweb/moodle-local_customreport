@@ -79,8 +79,10 @@ La CI de GitHub había fallado en todos los pushes de los hitos 1–6 y no se ha
 
 Lecciones: la CI es la puerta de cada hito; probar en las dos familias de BD; instalar con depuración de desarrollador.
 
+## Pasos de upgrade colapsados (versión 2026112300)
+Los pasos de desarrollo 2026110401–2026112200 se han eliminado de `db/upgrade.php`: `db/install.xml` y `db/install.php` describen el esquema y los datos completos de la versión 2026112200, que es la base. Un sitio con una versión previa a esa base recibe un error claro («desinstale y vuelva a instalar») sin aplicar nada a medias. Verificado: actualización desde la base, instalación limpia (esquema idéntico, sin avisos en modo desarrollador) y rechazo desde una versión previa.
+
 ## Pendiente (no bloqueante)
-- Pasos de upgrade 2026110401–07: se mantienen porque la rama ya se ha instalado; colapsarlos solo antes de la primera versión publicada.
 - Importar respuestas de mod_feedback a campos de perfil; UI para asignar causas de baja; aviso automático al tutor; relleno retroactivo (backfill) de uso; limitación de intentos en el endpoint SOAP; auditoría de accesibilidad automatizada.
 - TODO-NORMATIVA R-TN-1…R-TN-9 en docs/REQUISITOS.md.
 

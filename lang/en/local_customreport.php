@@ -322,6 +322,7 @@ $string['totaltime'] = 'Total time (h:mm)';
 $string['tutorpanel'] = 'Tutor panel';
 $string['tutorsummary'] = '{$a->noaccess} learners without access in the last {$a->days} days, {$a->behind} behind the planned pace, {$a->overdue} with overdue activities.';
 $string['type'] = 'Type';
+$string['upgradeprerelease'] = 'This site has a pre-release version ({$a}) of the follow-up plugin that cannot be upgraded. Uninstall the plugin and install it again.';
 $string['version'] = 'Version';
 $string['wholeaction'] = 'Whole action';
 $string['wholecourse'] = 'Whole course';

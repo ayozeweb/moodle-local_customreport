@@ -322,6 +322,7 @@ $string['totaltime'] = 'Tiempo total (h:mm)';
 $string['tutorpanel'] = 'Panel del tutor';
 $string['tutorsummary'] = '{$a->noaccess} alumnos sin acceso en los últimos {$a->days} días, {$a->behind} por debajo del ritmo previsto y {$a->overdue} con actividades vencidas.';
 $string['type'] = 'Tipo';
+$string['upgradeprerelease'] = 'Este sitio tiene una versión previa a la publicación ({$a}) del plugin de seguimiento que no se puede actualizar. Desinstale el plugin y vuelva a instalarlo.';
 $string['version'] = 'Versión';
 $string['wholeaction'] = 'Toda la acción';
 $string['wholecourse'] = 'Curso completo';
